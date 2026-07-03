@@ -9,6 +9,7 @@ class TestApp extends Equatable {
     required this.iconUrl,
     required this.playStoreUrl,
     required this.points,
+    this.category = '',
     this.steps = const [],
     this.createdAt,
   });
@@ -19,6 +20,7 @@ class TestApp extends Equatable {
   final String iconUrl;
   final String playStoreUrl;
   final int points;
+  final String category;
   final List<String> steps;
   final DateTime? createdAt;
 
@@ -30,6 +32,7 @@ class TestApp extends Equatable {
         iconUrl,
         playStoreUrl,
         points,
+        category,
         steps,
         createdAt,
       ];

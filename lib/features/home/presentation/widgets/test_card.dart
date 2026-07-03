@@ -54,6 +54,18 @@ class TestCard extends StatelessWidget {
                           fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 4),
+                    if (test.category.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          test.category,
+                          style: TextStyle(
+                            color: colors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                     Text(
                       test.description,
                       maxLines: 2,

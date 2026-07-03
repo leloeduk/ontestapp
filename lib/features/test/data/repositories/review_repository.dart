@@ -17,6 +17,10 @@ class ReviewRepository {
     return _reviewService.hasReviewed(userId, testId);
   }
 
+  Future<List<ReviewModel>> getReviewsByUser(String userId) {
+    return _reviewService.getReviewsByUser(userId);
+  }
+
   /// Enregistre l'avis puis crédite les points de l'utilisateur.
   Future<void> submitReview({
     required String userId,
