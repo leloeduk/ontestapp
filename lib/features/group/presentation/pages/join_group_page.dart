@@ -54,8 +54,19 @@ class JoinGroupPage extends StatelessWidget {
                 onPressed: () => _openGroup(context),
               ),
               const SizedBox(height: 16),
-              BlocBuilder<GroupBloc, GroupState>(
+              BlocConsumer<GroupBloc, GroupState>(
+                listener: (context, state) {
+                  if (state.status == GroupStatus.error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            state.errorMessage ?? 'Une erreur est survenue'),
+                      ),
+                    );
+                  }
+                },
                 builder: (context, state) {
+                  final isSuccessful = state.status == GroupStatus.success;
                   return OutlinedButton(
                     onPressed: state.status == GroupStatus.submitting
                         ? null
@@ -75,7 +86,7 @@ class JoinGroupPage extends StatelessWidget {
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2.5),
                           )
-                        : const Text('J\'ai déjà rejoint'),
+                        : Text(isSuccessful ? 'Rejoint !' : 'J\'ai déjà rejoint'),
                   );
                 },
               ),

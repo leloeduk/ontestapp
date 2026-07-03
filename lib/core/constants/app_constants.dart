@@ -7,7 +7,6 @@ class AppConstants {
   static const String testsCollection = 'tests';
   static const String reviewsCollection = 'reviews';
 
-  // Lien du groupe Google à rejoindre (à remplacer par le vrai lien).
   static const String groupUrl = 'https://groups.google.com/g/ontestapp';
 
   // Espacements réutilisables

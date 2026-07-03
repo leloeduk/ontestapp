@@ -22,8 +22,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     emit(const GroupState(status: GroupStatus.submitting));
     try {
       await _authRepository.joinGroup(event.uid);
-      // La redirection vers l'accueil est gérée par le routeur une fois
-      // que le document utilisateur est mis à jour (joinedGroup = true).
+      emit(const GroupState(status: GroupStatus.success));
     } catch (_) {
       emit(const GroupState(
         status: GroupStatus.error,
