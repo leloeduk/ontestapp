@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 
@@ -83,14 +84,29 @@ class ProfilePage extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 32),
-        OutlinedButton.icon(
-          onPressed: () => _confirmSignOut(context),
-          icon: const Icon(Icons.logout),
-          label: const Text('Se déconnecter'),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-            foregroundColor: colors.error,
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => context.push('/rewards'),
+            icon: const Icon(Icons.history_rounded),
+            label: const Text('Voir mon historique'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _confirmSignOut(context),
+            icon: const Icon(Icons.logout),
+            label: const Text('Se déconnecter'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+              foregroundColor: colors.error,
+            ),
           ),
         ),
       ],

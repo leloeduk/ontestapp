@@ -15,6 +15,8 @@ import '../../features/home/presentation/bloc/home_bloc.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/rewards/presentation/bloc/rewards_bloc.dart';
+import '../../features/rewards/presentation/pages/rewards_page.dart';
 import '../../features/test/data/repositories/review_repository.dart';
 import '../../features/test/data/repositories/test_repository.dart';
 import '../../features/test/domain/entities/test_app.dart';
@@ -144,6 +146,18 @@ class AppRouter {
             final points = state.extra as int? ?? 0;
             return ConfirmationPage(points: points);
           },
+        ),
+        GoRoute(
+          path: '/rewards',
+          builder: (context, __) => BlocProvider(
+            create: (ctx) {
+              final userId = ctx.read<AuthBloc>().state.user.uid;
+              return RewardsBloc(
+                reviewRepository: ctx.read<ReviewRepository>(),
+              )..add(RewardsRequested(userId));
+            },
+            child: const RewardsPage(),
+          ),
         ),
       ],
     );
