@@ -26,4 +26,13 @@ class ReviewService {
         .get();
     return query.docs.isNotEmpty;
   }
+
+  /// Récupère tous les avis d'un utilisateur (pour l'historique).
+  Future<List<ReviewModel>> getReviewsByUser(String userId) async {
+    final query = await _reviews
+        .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .get();
+    return query.docs.map((doc) => ReviewModel.fromSnapshot(doc)).toList();
+  }
 }

@@ -11,6 +11,7 @@ class TestModel extends TestApp {
     required super.iconUrl,
     required super.playStoreUrl,
     required super.points,
+    super.category,
     super.steps,
     super.createdAt,
   });
@@ -25,6 +26,7 @@ class TestModel extends TestApp {
       iconUrl: (map['iconUrl'] ?? '') as String,
       playStoreUrl: (map['playStoreUrl'] ?? '') as String,
       points: (map['points'] ?? 0) as int,
+      category: (map['category'] ?? '') as String,
       steps: (map['steps'] as List<dynamic>? ?? const [])
           .map((e) => e.toString())
           .toList(),
@@ -39,6 +41,7 @@ class TestModel extends TestApp {
       'iconUrl': iconUrl,
       'playStoreUrl': playStoreUrl,
       'points': points,
+      'category': category,
       'steps': steps,
       'createdAt': createdAt != null
           ? Timestamp.fromDate(createdAt!)
