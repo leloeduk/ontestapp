@@ -25,12 +25,17 @@ class ReviewRepository {
     required String comment,
     required int rewardPoints,
   }) async {
+    final already = await _reviewService.hasReviewed(userId, testId);
+    if (already) {
+      throw Exception('Tu as déjà donné ton avis sur cette application');
+    }
     final review = ReviewModel(
       id: '',
       userId: userId,
       testId: testId,
       rating: rating,
       comment: comment,
+      rewardPoints: rewardPoints,
     );
     await _reviewService.addReview(review);
     await _userService.addRewards(userId, points: rewardPoints);

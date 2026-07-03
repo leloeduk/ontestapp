@@ -8,6 +8,7 @@ class Review extends Equatable {
     required this.testId,
     required this.rating,
     required this.comment,
+    this.rewardPoints = 0,
     this.createdAt,
   });
 
@@ -16,8 +17,17 @@ class Review extends Equatable {
   final String testId;
   final double rating;
   final String comment;
+  final int rewardPoints;
   final DateTime? createdAt;
 
   @override
-  List<Object?> get props => [id, userId, testId, rating, comment, createdAt];
+  List<Object?> get props => [
+        id,
+        userId,
+        testId,
+        rating,
+        comment,
+        rewardPoints,
+        createdAt,
+      ];
 }

@@ -29,10 +29,12 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         rewardPoints: event.rewardPoints,
       );
       emit(const ReviewState(status: ReviewStatus.success));
-    } catch (_) {
-      emit(const ReviewState(
+    } catch (e) {
+      emit(ReviewState(
         status: ReviewStatus.error,
-        errorMessage: 'Impossible d\'enregistrer ton avis',
+        errorMessage: e.toString().contains('déjà donné')
+            ? 'Tu as déjà donné ton avis sur cette application'
+            : 'Impossible d\'enregistrer ton avis',
       ));
     }
   }

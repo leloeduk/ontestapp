@@ -1,6 +1,6 @@
 part of 'group_bloc.dart';
 
-enum GroupStatus { idle, submitting, error }
+enum GroupStatus { idle, submitting, success, error }
 
 class GroupState extends Equatable {
   const GroupState({this.status = GroupStatus.idle, this.errorMessage});

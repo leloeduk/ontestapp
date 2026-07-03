@@ -10,6 +10,7 @@ class ReviewModel extends Review {
     required super.testId,
     required super.rating,
     required super.comment,
+    super.rewardPoints,
     super.createdAt,
   });
 
@@ -22,6 +23,7 @@ class ReviewModel extends Review {
       testId: (map['testId'] ?? '') as String,
       rating: ((map['rating'] ?? 0) as num).toDouble(),
       comment: (map['comment'] ?? '') as String,
+      rewardPoints: (map['rewardPoints'] ?? 0) as int,
       createdAt: createdAt is Timestamp ? createdAt.toDate() : null,
     );
   }
@@ -32,6 +34,7 @@ class ReviewModel extends Review {
       'testId': testId,
       'rating': rating,
       'comment': comment,
+      'rewardPoints': rewardPoints,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
