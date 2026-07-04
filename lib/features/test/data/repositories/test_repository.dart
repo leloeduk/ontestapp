@@ -1,7 +1,7 @@
 import '../../domain/entities/test_app.dart';
+import '../models/test_model.dart';
 import '../services/test_service.dart';
 
-/// Abstraction des applications à tester pour les Blocs.
 class TestRepository {
   TestRepository({required TestService testService})
       : _testService = testService;
@@ -11,4 +11,6 @@ class TestRepository {
   Stream<List<TestApp>> watchTests() => _testService.watchTests();
 
   Future<TestApp?> getTest(String id) => _testService.getTest(id);
+
+  Future<void> addTest(TestModel test) => _testService.addTest(test);
 }

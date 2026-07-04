@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/app_image.dart';
 import '../../../test/domain/entities/test_app.dart';
 
 /// Carte d'une application à tester.
@@ -21,25 +21,11 @@ class TestCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: CachedNetworkImage(
-                  imageUrl: test.iconUrl,
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
-                    width: 56,
-                    height: 56,
-                    color: Colors.grey.shade200,
-                  ),
-                  errorWidget: (_, __, ___) => Container(
-                    width: 56,
-                    height: 56,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.apps),
-                  ),
-                ),
+              AppImage(
+                imageUrl: test.iconUrl,
+                width: 56,
+                height: 56,
+                borderRadius: 12,
               ),
               const SizedBox(width: 12),
               Expanded(
