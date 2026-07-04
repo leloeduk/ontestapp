@@ -25,4 +25,19 @@ class TestService {
     if (!doc.exists) return null;
     return TestModel.fromSnapshot(doc);
   }
+
+  Future<void> addTest(TestModel test) async {
+    final doc = _tests.doc();
+    final model = TestModel(
+      id: doc.id,
+      title: test.title,
+      description: test.description,
+      iconUrl: test.iconUrl,
+      playStoreUrl: test.playStoreUrl,
+      points: test.points,
+      category: test.category,
+      steps: test.steps,
+    );
+    await doc.set(model.toMap());
+  }
 }

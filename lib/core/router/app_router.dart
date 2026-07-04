@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/data/repositories/auth_repository.dart';
+import '../../features/auth/data/services/user_service.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/pages/sign_in_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
@@ -22,6 +23,8 @@ import '../../features/test/data/repositories/test_repository.dart';
 import '../../features/test/domain/entities/test_app.dart';
 import '../../features/test/presentation/bloc/review_bloc.dart';
 import '../../features/test/presentation/bloc/test_detail_bloc.dart';
+import '../../features/test/presentation/bloc/add_test_bloc.dart';
+import '../../features/test/presentation/pages/add_test_page.dart';
 import '../../features/test/presentation/pages/confirmation_page.dart';
 import '../../features/test/presentation/pages/review_page.dart';
 import '../../features/test/presentation/pages/test_detail_page.dart';
@@ -157,6 +160,16 @@ class AppRouter {
               )..add(RewardsRequested(userId));
             },
             child: const RewardsPage(),
+          ),
+        ),
+        GoRoute(
+          path: '/add-test',
+          builder: (context, __) => BlocProvider(
+            create: (ctx) => AddTestBloc(
+              testRepository: ctx.read<TestRepository>(),
+              userService: ctx.read<UserService>(),
+            ),
+            child: const AddTestPage(),
           ),
         ),
       ],

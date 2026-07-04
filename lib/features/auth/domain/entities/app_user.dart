@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Utilisateur de l'application.
 class AppUser extends Equatable {
   const AppUser({
     required this.uid,
@@ -10,6 +9,7 @@ class AppUser extends Equatable {
     this.points = 0,
     this.testsDone = 0,
     this.joinedGroup = false,
+    this.role = 'user',
     this.createdAt,
   });
 
@@ -20,9 +20,11 @@ class AppUser extends Equatable {
   final int points;
   final int testsDone;
   final bool joinedGroup;
+  final String role;
   final DateTime? createdAt;
 
-  /// Utilisateur "vide" représentant l'absence d'authentification.
+  bool get isAdmin => role == 'admin';
+
   static const AppUser empty = AppUser(uid: '', name: '', email: '');
 
   bool get isEmpty => uid.isEmpty;
@@ -34,6 +36,7 @@ class AppUser extends Equatable {
     int? points,
     int? testsDone,
     bool? joinedGroup,
+    String? role,
   }) {
     return AppUser(
       uid: uid,
@@ -43,6 +46,7 @@ class AppUser extends Equatable {
       points: points ?? this.points,
       testsDone: testsDone ?? this.testsDone,
       joinedGroup: joinedGroup ?? this.joinedGroup,
+      role: role ?? this.role,
       createdAt: createdAt,
     );
   }
@@ -56,6 +60,7 @@ class AppUser extends Equatable {
         points,
         testsDone,
         joinedGroup,
+        role,
         createdAt,
       ];
 }

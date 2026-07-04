@@ -36,7 +36,7 @@ class _ReviewPageState extends State<ReviewPage> {
             testId: widget.test.id,
             rating: _rating,
             comment: _commentController.text.trim(),
-            rewardPoints: widget.test.points,
+            rewardPoints: 10,
           ),
         );
   }
@@ -50,7 +50,7 @@ class _ReviewPageState extends State<ReviewPage> {
           if (state.status == ReviewStatus.success) {
             context.go(
               '/test/${widget.test.id}/confirmation',
-              extra: widget.test.points,
+              extra: 10,
             );
           } else if (state.status == ReviewStatus.error) {
             ScaffoldMessenger.of(context).showSnackBar(
