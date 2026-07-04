@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_theme.dart';
-
 /// Écran de démarrage affiché tant que l'état d'authentification est inconnu.
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
