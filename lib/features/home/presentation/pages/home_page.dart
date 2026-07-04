@@ -21,6 +21,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthBloc>().state.user;
+    final canAdd = user.points >= 50;
+
     return Scaffold(
       body: SafeArea(
         child: IndexedStack(
@@ -44,6 +47,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      floatingActionButton: canAdd
+          ? FloatingActionButton.extended(
+              onPressed: () => context.push('/add-test'),
+              icon: const Icon(Icons.add),
+              label: const Text('Ajouter'),
+            )
+          : null,
     );
   }
 }

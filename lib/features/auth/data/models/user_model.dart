@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../domain/entities/app_user.dart';
 
-/// Modèle de données utilisateur (conversion Firestore <-> [AppUser]).
 class UserModel extends AppUser {
   const UserModel({
     required super.uid,
@@ -12,6 +11,7 @@ class UserModel extends AppUser {
     super.points,
     super.testsDone,
     super.joinedGroup,
+    super.role,
     super.createdAt,
   });
 
@@ -25,6 +25,7 @@ class UserModel extends AppUser {
       points: (map['points'] ?? 0) as int,
       testsDone: (map['testsDone'] ?? 0) as int,
       joinedGroup: (map['joinedGroup'] ?? false) as bool,
+      role: (map['role'] ?? 'user') as String,
       createdAt: createdAt is Timestamp ? createdAt.toDate() : null,
     );
   }
@@ -41,6 +42,7 @@ class UserModel extends AppUser {
       'points': points,
       'testsDone': testsDone,
       'joinedGroup': joinedGroup,
+      'role': role,
       'createdAt':
           createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
     };

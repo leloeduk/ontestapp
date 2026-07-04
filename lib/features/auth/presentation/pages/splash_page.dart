@@ -9,22 +9,16 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.verified_user_outlined, size: 72, color: Colors.white),
-            SizedBox(height: 16),
-            Text(
-              'OnTestApp',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
+          children: [
+            Image.asset(
+              'assets/images/ontestapps.png',
+              width: 210,
+              height: 180,
             ),
-            SizedBox(height: 24),
+            SizedBox(height: 30),
             CircularProgressIndicator(color: Colors.white),
           ],
         ),

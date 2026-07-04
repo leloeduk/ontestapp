@@ -39,6 +39,16 @@ class UserService {
     await _users.doc(uid).update({'joinedGroup': joined});
   }
 
+  Future<void> updateRole(String uid, {required String role}) async {
+    await _users.doc(uid).update({'role': role});
+  }
+
+  Future<void> deductPoints(String uid, {required int points}) async {
+    await _users.doc(uid).update({
+      'points': FieldValue.increment(-points),
+    });
+  }
+
   /// Incrémente les points et le nombre de tests réalisés.
   Future<void> addRewards(String uid, {required int points}) async {
     await _users.doc(uid).update({

@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
 import '../bloc/test_detail_bloc.dart';
 import '../widgets/step_item.dart';
@@ -36,22 +36,11 @@ class TestDetailPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: CachedNetworkImage(
-                            imageUrl: test.iconUrl,
-                            width: 96,
-                            height: 96,
-                            fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) => Container(
-                              width: 96,
-                              height: 96,
-                              color: Colors.grey.shade200,
-                              child: const Icon(Icons.apps, size: 40),
-                            ),
-                          ),
-                        ),
+                      AppImage(
+                        imageUrl: test.iconUrl,
+                        width: 96,
+                        height: 96,
+                        borderRadius: 20,
                       ),
                       const SizedBox(height: 16),
                       Center(

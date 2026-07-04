@@ -49,6 +49,9 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.2.3
 
+  # Image
+  image_picker: ^1.1.2
+
   # UI Components
   flutter_animate: ^4.5.0
   flutter_rating_bar: ^4.0.1
