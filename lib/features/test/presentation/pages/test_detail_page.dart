@@ -287,7 +287,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
                                   color: Colors.green,
                                 ),
                                 const SizedBox(width: 6),
-                                Text('Télécharger et installer l\'application'),
+                                Text('Suivre une vidéo pour gagner 5 points'),
                               ],
                             ),
                             Row(
@@ -298,7 +298,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
                                   color: Colors.green,
                                 ),
                                 const SizedBox(width: 6),
-                                Text('Suivre une vidéo pour gagner 5 points'),
+                                Text('Télécharger et installer l\'application'),
                               ],
                             ),
                             Row(

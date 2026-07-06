@@ -82,25 +82,30 @@ class TestInProgressPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(test.title)),
       body: SafeArea(
-        child: ListView(
+        child: Padding(
           padding: const EdgeInsets.all(20),
-          children: [
-            const SizedBox(height: 20),
-            Icon(
-              Icons.download_for_offline_outlined,
-              size: 96,
-              color: Theme.of(context).colorScheme.primary,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                Icon(
+                  Icons.download_for_offline_outlined,
+                  size: 96,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Test en cours',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 12),
+                ReviewStepper(steps: _buildSteps(context)),
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Test en cours',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 12),
-            ReviewStepper(steps: _buildSteps(context)),
-            const SizedBox(height: 32),
-          ],
+          ),
         ),
       ),
     );

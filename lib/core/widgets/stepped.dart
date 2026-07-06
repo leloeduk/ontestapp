@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class ReviewStepper extends StatefulWidget {
   const ReviewStepper({super.key, required this.steps});
@@ -43,7 +43,7 @@ class _ReviewStepperState extends State<ReviewStepper> {
               if (_currentStep > 0)
                 OutlinedButton(
                   onPressed: details.onStepCancel,
-                  child: const Text('Précédent'),
+                  child: const Text('Pr├⌐c├⌐dent'),
                 ),
             ],
           ),

@@ -95,16 +95,16 @@ class _ReviewPageState extends State<ReviewPage> {
     }
     final user = context.read<AuthBloc>().state.user;
     context.read<ReviewBloc>().add(
-          ReviewSubmitted(
-            userId: user.uid,
-            userName: user.name,
-            testId: widget.test.id,
-            testName: widget.test.title,
-            screenshot1Path: _screenshot1Path!,
-            screenshot2Path: _screenshot2Path!,
-            appName: widget.test.title,
-          ),
-        );
+      ReviewSubmitted(
+        userId: user.uid,
+        userName: user.name,
+        testId: widget.test.id,
+        testName: widget.test.title,
+        screenshot1Path: _screenshot1Path!,
+        screenshot2Path: _screenshot2Path!,
+        appName: widget.test.title,
+      ),
+    );
   }
 
   List<Step> _buildSteps() {
@@ -231,10 +231,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     'Les points seront crédités après vérification '
                     'manuelle de tes captures.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 13,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                   ),
                   const SizedBox(height: 16),
                   AppButton(
