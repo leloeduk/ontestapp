@@ -212,11 +212,23 @@ class _TestDetailPageState extends State<TestDetailPage> {
                               children: [
                                 Text(
                                   test.title,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.headlineSmall,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 10),
+                                // categories de l'application
+                                Text(
+                                  test.category,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 10),
                                 Center(
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
@@ -240,33 +252,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Text(
-                            test.title,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Center(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.primaryContainer,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              '+${test.points} points',
-                              style: TextStyle(
-                                color: colors.onPrimaryContainer,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
+
                         const SizedBox(height: 24),
                         Text(
                           'Description',
@@ -284,6 +270,85 @@ class _TestDetailPageState extends State<TestDetailPage> {
                           for (int i = 0; i < test.steps.length; i++)
                             StepItem(number: i + 1, text: test.steps[i]),
                         ],
+                        const SizedBox(height: 24),
+                        Text(
+                          'Ce que vous devez faire',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        // un ckecklist des conditions de validation du test
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 30,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 6),
+                                Text('Télécharger et installer l\'application'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 30,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 6),
+                                Text('Suivre une vidéo pour gagner 5 points'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 30,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 6),
+                                Text('Donner mon avis sur l\'application'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 30,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 6),
+                                Text("Une capture d'écran de l'app installer "),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 30,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 6),
+                                Text("Une capture d'écran de mon avis"),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 30,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  "Les deux captures validées et \n je gagne 10 points",
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
