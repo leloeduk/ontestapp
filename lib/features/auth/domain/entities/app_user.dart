@@ -9,8 +9,12 @@ class AppUser extends Equatable {
     this.points = 0,
     this.testsDone = 0,
     this.joinedGroup = false,
+    this.playStoreConfigured = false,
     this.role = 'user',
+    this.plan = 'free',
+    this.testerEmail,
     this.createdAt,
+    this.isDeveloper = false,
   });
 
   final String uid;
@@ -20,8 +24,12 @@ class AppUser extends Equatable {
   final int points;
   final int testsDone;
   final bool joinedGroup;
+  final bool playStoreConfigured;
   final String role;
+  final String plan;
+  final String? testerEmail;
   final DateTime? createdAt;
+  final bool isDeveloper;
 
   bool get isAdmin => role == 'admin';
 
@@ -36,7 +44,11 @@ class AppUser extends Equatable {
     int? points,
     int? testsDone,
     bool? joinedGroup,
+    bool? playStoreConfigured,
     String? role,
+    String? plan,
+    String? testerEmail,
+    bool? isDeveloper,
   }) {
     return AppUser(
       uid: uid,
@@ -46,8 +58,12 @@ class AppUser extends Equatable {
       points: points ?? this.points,
       testsDone: testsDone ?? this.testsDone,
       joinedGroup: joinedGroup ?? this.joinedGroup,
+      playStoreConfigured: playStoreConfigured ?? this.playStoreConfigured,
       role: role ?? this.role,
+      plan: plan ?? this.plan,
+      testerEmail: testerEmail ?? this.testerEmail,
       createdAt: createdAt,
+      isDeveloper: isDeveloper ?? this.isDeveloper,
     );
   }
 
@@ -60,7 +76,11 @@ class AppUser extends Equatable {
         points,
         testsDone,
         joinedGroup,
+        playStoreConfigured,
         role,
+        plan,
+        testerEmail,
         createdAt,
+        isDeveloper,
       ];
 }

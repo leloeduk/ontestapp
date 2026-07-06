@@ -11,15 +11,18 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/add_test_bloc.dart';
 
 const _categories = [
+  'Divertissement',
   'Jeux',
   'Réseaux sociaux',
   'Utilitaires',
   'Éducation',
   'Productivité',
-  'Divertissement',
   'Musique',
   'Photographie',
   'Shopping',
+  'Voyage',
+  'Sport',
+  'Videogames',
   'Autre',
 ];
 
@@ -98,9 +101,9 @@ class _AddTestPageState extends State<AddTestPage> {
           context.pop();
         }
         if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
       },
       child: Scaffold(
@@ -120,7 +123,9 @@ class _AddTestPageState extends State<AddTestPage> {
                     child: Container(
                       height: 160,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: Theme.of(context).colorScheme.outlineVariant,
@@ -138,13 +143,20 @@ class _AddTestPageState extends State<AddTestPage> {
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_photo_alternate_rounded,
-                                    size: 48,
-                                    color: Theme.of(context).colorScheme.primary),
+                                Icon(
+                                  Icons.add_photo_alternate_rounded,
+                                  size: 48,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                                 const SizedBox(height: 8),
-                                Text('Sélectionner une image',
-                                    style: TextStyle(
-                                        color: Theme.of(context).colorScheme.primary)),
+                                Text(
+                                  'Sélectionner une image',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                ),
                               ],
                             ),
                     ),
@@ -169,8 +181,10 @@ class _AddTestPageState extends State<AddTestPage> {
                   label: 'URL Play Store',
                   validator: (v) {
                     if (v?.trim().isEmpty == true) return 'Requis';
-                    if (!v!.trim().startsWith('https://play.google.com/store/apps/')) {
-                      return 'URL Play Store invalide';
+                    if (!v!.trim().startsWith(
+                      'https://play.google.com/store/apps/',
+                    )) {
+                      return 'URL Play Store valide :https://play.google.com/store/apps/';
                     }
                     return null;
                   },

@@ -1,13 +1,16 @@
 import 'package:equatable/equatable.dart';
 
-/// Avis laissé par un utilisateur sur une application testée.
 class Review extends Equatable {
   const Review({
     required this.id,
     required this.userId,
     required this.testId,
-    required this.rating,
-    required this.comment,
+    required this.screenshot1Url,
+    required this.screenshot2Url,
+    this.userName,
+    this.testName,
+    this.playStoreUrl,
+    this.testValidated = false,
     this.rewardPoints = 0,
     this.createdAt,
   });
@@ -15,8 +18,12 @@ class Review extends Equatable {
   final String id;
   final String userId;
   final String testId;
-  final double rating;
-  final String comment;
+  final String screenshot1Url;
+  final String screenshot2Url;
+  final String? userName;
+  final String? testName;
+  final String? playStoreUrl;
+  final bool testValidated;
   final int rewardPoints;
   final DateTime? createdAt;
 
@@ -25,8 +32,12 @@ class Review extends Equatable {
         id,
         userId,
         testId,
-        rating,
-        comment,
+        screenshot1Url,
+        screenshot2Url,
+        userName,
+        testName,
+        playStoreUrl,
+        testValidated,
         rewardPoints,
         createdAt,
       ];

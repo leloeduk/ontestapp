@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../models/test_model.dart';
 
-/// Service Firestore pour la collection `tests`.
 class TestService {
   TestService({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
@@ -18,6 +17,12 @@ class TestService {
           (query) =>
               query.docs.map((doc) => TestModel.fromSnapshot(doc)).toList(),
         );
+  }
+
+  Future<List<TestModel>> getTests() async {
+    final snapshot =
+        await _tests.orderBy('createdAt', descending: true).get();
+    return snapshot.docs.map((doc) => TestModel.fromSnapshot(doc)).toList();
   }
 
   Future<TestModel?> getTest(String id) async {
@@ -37,7 +42,16 @@ class TestService {
       points: test.points,
       category: test.category,
       steps: test.steps,
+      userId: test.userId,
     );
     await doc.set(model.toMap());
+  }
+
+  Future<void> updateTest(String id, Map<String, dynamic> data) async {
+    await _tests.doc(id).update(data);
+  }
+
+  Future<void> deleteTest(String id) async {
+    await _tests.doc(id).delete();
   }
 }

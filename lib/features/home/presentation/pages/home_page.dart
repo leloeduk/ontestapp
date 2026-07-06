@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/services/connectivity_cubit.dart';
+import '../../../../core/widgets/app_drawer.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
+import '../../../../core/widgets/banner_ad_widget.dart';
+import '../../../../core/widgets/offline_banner.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
 import '../bloc/home_bloc.dart';
@@ -25,11 +29,18 @@ class _HomePageState extends State<HomePage> {
     final canAdd = user.points >= 50;
 
     return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(
-          index: _index,
-          children: const [_TestsTab(), ProfilePage()],
-        ),
+      drawer: const AppDrawer(),
+      body: Column(
+        children: [
+          const _ConnectivityBanner(),
+          Expanded(
+            child: IndexedStack(
+              index: _index,
+              children: const [_TestsTab(), ProfilePage()],
+            ),
+          ),
+          const BannerAdWidget(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
@@ -58,6 +69,22 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class _ConnectivityBanner extends StatelessWidget {
+  const _ConnectivityBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ConnectivityCubit, bool>(
+      builder: (context, isConnected) {
+        if (!isConnected) {
+          return const OfflineBanner();
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+}
+
 class _TestsTab extends StatelessWidget {
   const _TestsTab();
 
@@ -72,12 +99,17 @@ class _TestsTab extends StatelessWidget {
           return const ErrorView(message: 'Impossible de charger les tests');
         }
 
-        final user = context.watch<AuthBloc>().state.user;
         return CustomScrollView(
           slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverToBoxAdapter(child: PointsHeader(user: user)),
+            const SliverPadding(
+              padding: EdgeInsets.all(16),
+              sliver: SliverToBoxAdapter(child: _PointsHeaderWidget()),
+            ),
+            const SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverToBoxAdapter(
+                child: _EarnCard(),
+              ),
             ),
             const SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -104,14 +136,79 @@ class _TestsTab extends StatelessWidget {
                     final test = state.tests[i];
                     return TestCard(
                       test: test,
-                      onTap: () => context.push('/test/${test.id}', extra: test),
+                      onTap: () =>
+                          context.push('/test/${test.id}', extra: test),
                     );
                   },
                 ),
               ),
+            const SliverPadding(
+              padding: EdgeInsets.only(bottom: 16),
+              sliver: SliverToBoxAdapter(child: SizedBox(height: 8)),
+            ),
           ],
         );
       },
+    );
+  }
+}
+
+class _PointsHeaderWidget extends StatelessWidget {
+  const _PointsHeaderWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<AuthBloc>().state.user;
+    return PointsHeader(user: user);
+  }
+}
+
+class _EarnCard extends StatelessWidget {
+  const _EarnCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      color: colors.tertiaryContainer,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/earn'),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.monetization_on_rounded,
+                  color: colors.onTertiaryContainer, size: 40),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Gagne des points',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: colors.onTertiaryContainer,
+                      ),
+                    ),
+                    Text(
+                      'Regarde une vidéo et gagne 5 points',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: colors.onTertiaryContainer.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios_rounded,
+                  size: 16, color: colors.onTertiaryContainer),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

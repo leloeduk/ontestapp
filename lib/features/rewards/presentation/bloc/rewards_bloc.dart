@@ -20,6 +20,7 @@ class RewardsBloc extends Bloc<RewardsEvent, RewardsState> {
     RewardsRequested event,
     Emitter<RewardsState> emit,
   ) async {
+    if (state.status == RewardsStatus.loading) return;
     emit(const RewardsState(status: RewardsStatus.loading));
     try {
       final reviews = await _reviewRepository.getReviewsByUser(event.userId);

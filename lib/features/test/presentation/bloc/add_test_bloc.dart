@@ -109,6 +109,7 @@ class AddTestBloc extends Bloc<AddTestEvent, AddTestState> {
         points: 10,
         category: event.category,
         steps: const [],
+        userId: event.userId,
       );
       await _testRepository.addTest(test);
       await _userService.deductPoints(event.userId, points: 50);

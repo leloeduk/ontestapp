@@ -19,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignUpRequested>(_onSignUp);
     on<AuthGoogleSignInRequested>(_onGoogleSignIn);
     on<AuthSignOutRequested>(_onSignOut);
+    on<AuthUpdateProfileRequested>(_onUpdateProfile);
 
     _userSub = _authRepository.user.listen(
       (user) => add(_AuthUserChanged(user)),
@@ -89,6 +90,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(submitting: false, errorMessage: _message(e)));
     } catch (_) {
       emit(state.copyWith(submitting: false, errorMessage: 'Connexion Google impossible'));
+    }
+  }
+
+  Future<void> _onUpdateProfile(
+    AuthUpdateProfileRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      await _authRepository.updateProfile(
+        state.user.uid,
+        name: event.name,
+        photoUrl: event.photoUrl,
+      );
+    } catch (_) {
+      emit(state.copyWith(errorMessage: 'Impossible de modifier le profil'));
     }
   }
 

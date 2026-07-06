@@ -10,18 +10,33 @@ sealed class ReviewEvent extends Equatable {
 class ReviewSubmitted extends ReviewEvent {
   const ReviewSubmitted({
     required this.userId,
+    required this.userName,
     required this.testId,
-    required this.rating,
-    required this.comment,
-    required this.rewardPoints,
+    required this.testName,
+    required this.screenshot1Path,
+    required this.screenshot2Path,
+    required this.appName,
+    this.rewardPoints = 10,
   });
 
   final String userId;
+  final String userName;
   final String testId;
-  final double rating;
-  final String comment;
+  final String testName;
+  final String screenshot1Path;
+  final String screenshot2Path;
+  final String appName;
   final int rewardPoints;
 
   @override
-  List<Object?> get props => [userId, testId, rating, comment, rewardPoints];
+  List<Object?> get props => [
+        userId,
+        userName,
+        testId,
+        testName,
+        screenshot1Path,
+        screenshot2Path,
+        appName,
+        rewardPoints,
+      ];
 }

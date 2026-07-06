@@ -46,6 +46,16 @@ class AuthGoogleSignInRequested extends AuthEvent {
   const AuthGoogleSignInRequested();
 }
 
+class AuthUpdateProfileRequested extends AuthEvent {
+  const AuthUpdateProfileRequested({this.name, this.photoUrl});
+
+  final String? name;
+  final String? photoUrl;
+
+  @override
+  List<Object?> get props => [name, photoUrl];
+}
+
 class AuthSignOutRequested extends AuthEvent {
   const AuthSignOutRequested();
 }

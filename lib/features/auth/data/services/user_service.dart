@@ -39,6 +39,24 @@ class UserService {
     await _users.doc(uid).update({'joinedGroup': joined});
   }
 
+  Future<void> updateTesterEmail(String uid, String email) async {
+    await _users.doc(uid).update({'testerEmail': email});
+  }
+
+  Future<void> updatePlayStoreConfigured(String uid) async {
+    await _users.doc(uid).update({'playStoreConfigured': true});
+  }
+
+  Future<void> addPointsForReward(String uid, {required int points}) async {
+    await _users.doc(uid).update({
+      'points': FieldValue.increment(points),
+    });
+  }
+
+  Future<void> updateUser(String uid, Map<String, dynamic> data) async {
+    await _users.doc(uid).update(data);
+  }
+
   Future<void> updateRole(String uid, {required String role}) async {
     await _users.doc(uid).update({'role': role});
   }

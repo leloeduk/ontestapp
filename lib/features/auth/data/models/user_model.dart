@@ -11,8 +11,12 @@ class UserModel extends AppUser {
     super.points,
     super.testsDone,
     super.joinedGroup,
+    super.playStoreConfigured,
     super.role,
+    super.plan,
+    super.testerEmail,
     super.createdAt,
+    super.isDeveloper,
   });
 
   factory UserModel.fromMap(String uid, Map<String, dynamic> map) {
@@ -25,13 +29,17 @@ class UserModel extends AppUser {
       points: (map['points'] ?? 0) as int,
       testsDone: (map['testsDone'] ?? 0) as int,
       joinedGroup: (map['joinedGroup'] ?? false) as bool,
+      playStoreConfigured: (map['playStoreConfigured'] ?? false) as bool,
       role: (map['role'] ?? 'user') as String,
+      plan: (map['plan'] ?? 'free') as String,
+      testerEmail: map['testerEmail'] as String?,
+      isDeveloper: (map['isDeveloper'] ?? false) as bool,
       createdAt: createdAt is Timestamp ? createdAt.toDate() : null,
     );
   }
 
-  factory UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
-    return UserModel.fromMap(doc.id, doc.data() ?? const {});
+  factory UserModel.fromSnapshot(DocumentSnapshot<Object?> doc) {
+    return UserModel.fromMap(doc.id, (doc.data() as Map<String, dynamic>?) ?? const {});
   }
 
   Map<String, dynamic> toMap() {
@@ -42,7 +50,11 @@ class UserModel extends AppUser {
       'points': points,
       'testsDone': testsDone,
       'joinedGroup': joinedGroup,
+      'playStoreConfigured': playStoreConfigured,
       'role': role,
+      'plan': plan,
+      'testerEmail': testerEmail,
+      'isDeveloper': isDeveloper,
       'createdAt':
           createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
     };

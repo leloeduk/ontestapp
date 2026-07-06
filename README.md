@@ -66,33 +66,38 @@ Après avoir accepté le test, l'application redirige automatiquement vers le Go
 
 L'écran rappelle également qu'il faudra revenir dans OnTestApp une fois le test terminé pour laisser un avis et récupérer les points.
 
-7. Évaluation
+7. Évaluation sur Google Play
 
 Une fois le test effectué, l'utilisateur revient dans OnTestApp.
 
-Il donne d'abord une note en étoiles, puis rédige un commentaire décrivant :
+L'application l'invite à :
+1. Ouvrir directement Google Play pour laisser une note et un commentaire sur l'application
+2. Prendre une capture d'écran de l'application installée (preuve d'installation)
+3. Prendre une capture d'écran de son avis publié sur Google Play (preuve du commentaire)
 
-son expérience,
-les qualités de l'application,
-les éventuels bugs,
-les améliorations souhaitées.
+Les deux captures d'écran sont uploadées sur Firebase Storage.
 
-L'objectif est de fournir un retour utile au développeur.
+L'objectif est de garantir que l'utilisateur a bien installé et testé l'application, et qu'il a laissé un avis public sur le Play Store.
 
-8. Validation
+8. Validation manuelle
 
-Après l'envoi de l'avis, l'application confirme la participation.
+Après l'envoi des captures, l'application confirme la soumission.
 
-L'utilisateur reçoit automatiquement les points promis pour ce test.
+Les points **ne sont pas crédités automatiquement**. Un administrateur vérifie manuellement les deux captures d'écran depuis la page `/admin/validation` :
+
+- Capture 1 : vérifier que l'application est bien installée
+- Capture 2 : vérifier que l'avis a bien été publié sur Google Play
+
+Une fois validé, les points sont crédités sur le compte de l'utilisateur.
 
 9. Profil
 
 Le profil récapitule toute son activité :
 
-total des points,
-nombre de tests réalisés,
-nombre d'avis publiés,
-historique de ses récompenses.
+total des points gagnés,
+nombre de tests effectués,
+statut de chaque soumission (Validé / En attente),
+historique des récompenses.
 
 Cela encourage les utilisateurs à rester actifs et à participer régulièrement.
 
@@ -115,13 +120,19 @@ Installer depuis le Play Store
 Tester l'application
 │
 ▼
-Donner une note
+Laisser un avis sur Google Play
 │
 ▼
-Rédiger un commentaire
+Prendre 2 captures d'écran (installation + avis)
 │
 ▼
-Recevoir des points
+Upload des captures sur Firebase Storage
+│
+▼
+Validation manuelle par l'admin
+│
+▼
+Réception des points
 │
 ▼
 Recommencer avec une nouvelle application

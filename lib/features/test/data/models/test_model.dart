@@ -14,10 +14,11 @@ class TestModel extends TestApp {
     super.category,
     super.steps,
     super.createdAt,
+    super.userId,
   });
 
-  factory TestModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final map = doc.data() ?? const {};
+  factory TestModel.fromSnapshot(DocumentSnapshot<Object?> doc) {
+    final map = (doc.data() as Map<String, dynamic>?) ?? const {};
     final createdAt = map['createdAt'];
     return TestModel(
       id: doc.id,
@@ -30,6 +31,7 @@ class TestModel extends TestApp {
       steps: (map['steps'] as List<dynamic>? ?? const [])
           .map((e) => e.toString())
           .toList(),
+      userId: (map['userId'] ?? '') as String,
       createdAt: createdAt is Timestamp ? createdAt.toDate() : null,
     );
   }
@@ -43,6 +45,7 @@ class TestModel extends TestApp {
       'points': points,
       'category': category,
       'steps': steps,
+      'userId': userId,
       'createdAt': createdAt != null
           ? Timestamp.fromDate(createdAt!)
           : FieldValue.serverTimestamp(),

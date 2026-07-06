@@ -12,6 +12,7 @@ class TestApp extends Equatable {
     this.category = '',
     this.steps = const [],
     this.createdAt,
+    this.userId = '',
   });
 
   final String id;
@@ -23,6 +24,7 @@ class TestApp extends Equatable {
   final String category;
   final List<String> steps;
   final DateTime? createdAt;
+  final String userId;
 
   TestApp copyWith({
     String? id,
@@ -34,6 +36,7 @@ class TestApp extends Equatable {
     String? category,
     List<String>? steps,
     DateTime? createdAt,
+    String? userId,
   }) {
     return TestApp(
       id: id ?? this.id,
@@ -45,6 +48,7 @@ class TestApp extends Equatable {
       category: category ?? this.category,
       steps: steps ?? this.steps,
       createdAt: createdAt ?? this.createdAt,
+      userId: userId ?? this.userId,
     );
   }
 
@@ -59,5 +63,6 @@ class TestApp extends Equatable {
         category,
         steps,
         createdAt,
+        userId,
       ];
 }

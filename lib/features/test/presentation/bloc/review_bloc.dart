@@ -23,9 +23,12 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
     try {
       await _reviewRepository.submitReview(
         userId: event.userId,
+        userName: event.userName,
         testId: event.testId,
-        rating: event.rating,
-        comment: event.comment,
+        testName: event.testName,
+        screenshot1Path: event.screenshot1Path,
+        screenshot2Path: event.screenshot2Path,
+        appName: event.appName,
         rewardPoints: event.rewardPoints,
       );
       emit(const ReviewState(status: ReviewStatus.success));

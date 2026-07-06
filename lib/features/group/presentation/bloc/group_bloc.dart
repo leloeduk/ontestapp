@@ -21,6 +21,13 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   ) async {
     emit(const GroupState(status: GroupStatus.submitting));
     try {
+      await _authRepository.updateIsDeveloper(event.uid, event.isDeveloper);
+      if (event.testerEmail != null) {
+        await _authRepository.updateTesterEmail(event.uid, event.testerEmail!);
+      }
+      if (event.playStoreConfigured) {
+        await _authRepository.updatePlayStoreConfigured(event.uid);
+      }
       await _authRepository.joinGroup(event.uid);
       emit(const GroupState(status: GroupStatus.success));
     } catch (_) {

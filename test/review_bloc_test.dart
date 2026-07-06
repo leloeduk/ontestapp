@@ -13,10 +13,12 @@ void main() {
 
   const event = ReviewSubmitted(
     userId: 'u1',
+    userName: 'Test User',
     testId: 't1',
-    rating: 5,
-    comment: 'Super',
-    rewardPoints: 10,
+    testName: 'Test App',
+    screenshot1Path: '/path/1.jpg',
+    screenshot2Path: '/path/2.jpg',
+    appName: 'Test App',
   );
 
   blocTest<ReviewBloc, ReviewState>(
@@ -24,9 +26,12 @@ void main() {
     setUp: () {
       when(() => repository.submitReview(
             userId: any(named: 'userId'),
+            userName: any(named: 'userName'),
             testId: any(named: 'testId'),
-            rating: any(named: 'rating'),
-            comment: any(named: 'comment'),
+            testName: any(named: 'testName'),
+            screenshot1Path: any(named: 'screenshot1Path'),
+            screenshot2Path: any(named: 'screenshot2Path'),
+            appName: any(named: 'appName'),
             rewardPoints: any(named: 'rewardPoints'),
           )).thenAnswer((_) async {});
     },
@@ -45,9 +50,12 @@ void main() {
     setUp: () {
       when(() => repository.submitReview(
             userId: any(named: 'userId'),
+            userName: any(named: 'userName'),
             testId: any(named: 'testId'),
-            rating: any(named: 'rating'),
-            comment: any(named: 'comment'),
+            testName: any(named: 'testName'),
+            screenshot1Path: any(named: 'screenshot1Path'),
+            screenshot2Path: any(named: 'screenshot2Path'),
+            appName: any(named: 'appName'),
             rewardPoints: any(named: 'rewardPoints'),
           )).thenThrow(Exception('boom'));
     },

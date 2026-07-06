@@ -1,10 +1,10 @@
 part of 'rewards_bloc.dart';
 
-enum RewardsStatus { loading, loaded, error }
+enum RewardsStatus { idle, loading, loaded, error }
 
 class RewardsState extends Equatable {
   const RewardsState({
-    this.status = RewardsStatus.loading,
+    this.status = RewardsStatus.idle,
     this.reviews = const [],
     this.totalPoints = 0,
     this.errorMessage,

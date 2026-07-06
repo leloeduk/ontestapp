@@ -10,7 +10,14 @@ class TestRepository {
 
   Stream<List<TestApp>> watchTests() => _testService.watchTests();
 
+  Future<List<TestApp>> getTests() => _testService.getTests();
+
   Future<TestApp?> getTest(String id) => _testService.getTest(id);
 
   Future<void> addTest(TestModel test) => _testService.addTest(test);
+
+  Future<void> updateTest(String id, Map<String, dynamic> data) =>
+      _testService.updateTest(id, data);
+
+  Future<void> deleteTest(String id) => _testService.deleteTest(id);
 }

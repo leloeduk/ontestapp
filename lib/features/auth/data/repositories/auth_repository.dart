@@ -87,4 +87,19 @@ class AuthRepository {
 
   /// Marque l'utilisateur comme ayant rejoint le groupe.
   Future<void> joinGroup(String uid) => _userService.updateJoinedGroup(uid, true);
+
+  Future<void> updateTesterEmail(String uid, String email) =>
+      _userService.updateTesterEmail(uid, email);
+
+  Future<void> updatePlayStoreConfigured(String uid) =>
+      _userService.updatePlayStoreConfigured(uid);
+
+  Future<void> updateProfile(String uid, {String? name, String? photoUrl}) =>
+      _userService.updateUser(uid, {
+        if (name != null) 'name': name,
+        if (photoUrl != null) 'photoUrl': photoUrl,
+      });
+
+  Future<void> updateIsDeveloper(String uid, bool value) =>
+      _userService.updateUser(uid, {'isDeveloper': value});
 }

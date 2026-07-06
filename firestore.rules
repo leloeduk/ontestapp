@@ -2,24 +2,28 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Utilisateurs : lecture pour tous, écriture seulement sur son propre doc
     match /users/{userId} {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null && request.auth.uid == userId;
-      allow delete: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null;
+      allow delete: if false;
     }
 
-    // Tests : lecture pour tous, création pour tout utilisateur connecté
     match /tests/{test} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
       allow update: if request.auth != null;
-      allow delete: if false; // pas de suppression depuis l'app
+      allow delete: if false;
     }
 
-    // Avis : lecture pour tous, création si pas déjà donné (vérifié par l'app)
     match /reviews/{review} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null;
+      allow delete: if false;
+    }
+
+    match /feedback/{doc} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
       allow update: if false;

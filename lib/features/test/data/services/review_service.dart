@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../models/review_model.dart';
 
-/// Service Firestore pour la collection `reviews`.
 class ReviewService {
   ReviewService({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
@@ -17,7 +16,6 @@ class ReviewService {
     await _reviews.add(review.toMap());
   }
 
-  /// Indique si l'utilisateur a déjà donné son avis sur ce test.
   Future<bool> hasReviewed(String userId, String testId) async {
     final query = await _reviews
         .where('userId', isEqualTo: userId)
@@ -27,12 +25,29 @@ class ReviewService {
     return query.docs.isNotEmpty;
   }
 
-  /// Récupère tous les avis d'un utilisateur (pour l'historique).
-  Future<List<ReviewModel>> getReviewsByUser(String userId) async {
+  Future<List<ReviewModel>> getReviewsByUser(String userId, {int limit = 20}) async {
     final query = await _reviews
         .where('userId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
+        .limit(limit)
         .get();
-    return query.docs.map((doc) => ReviewModel.fromSnapshot(doc)).toList();
+    final reviews = query.docs.map((doc) => ReviewModel.fromSnapshot(doc)).toList();
+    reviews.sort((a, b) => b.createdAt?.compareTo(a.createdAt ?? DateTime(0)) ?? 0);
+    return reviews;
+  }
+
+  Future<List<ReviewModel>> getUnvalidatedReviews() async {
+    final query = await _reviews
+        .where('testValidated', isEqualTo: false)
+        .get();
+    final reviews = query.docs.map((doc) => ReviewModel.fromSnapshot(doc)).toList();
+    reviews.sort((a, b) => b.createdAt?.compareTo(a.createdAt ?? DateTime(0)) ?? 0);
+    return reviews;
+  }
+
+  Future<void> validateReview(String reviewId, int rewardPoints) async {
+    await _reviews.doc(reviewId).update({
+      'testValidated': true,
+      'rewardPoints': rewardPoints,
+    });
   }
 }

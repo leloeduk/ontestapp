@@ -4,8 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
 import '../bloc/rewards_bloc.dart';
 
-class RewardsPage extends StatelessWidget {
-  const RewardsPage({super.key});
+class RewardsPage extends StatefulWidget {
+  // passe l'ID de l'utilisateur actuel en paramètre
+  final String userId;
+
+  const RewardsPage({super.key, required this.userId});
+
+  @override
+  State<RewardsPage> createState() => _RewardsPageState();
+}
+
+class _RewardsPageState extends State<RewardsPage> {
+  @override
+  initState() {
+    super.initState();
+    context.read<RewardsBloc>().add(
+      RewardsRequested(widget.userId),
+    ); // Utilise l'ID de l'utilisateur passé en paramètre
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +31,8 @@ class RewardsPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Mon historique')),
       body: BlocBuilder<RewardsBloc, RewardsState>(
         builder: (context, state) {
-          if (state.status == RewardsStatus.loading) {
+          if (state.status == RewardsStatus.idle ||
+              state.status == RewardsStatus.loading) {
             return const LoadingView();
           }
           if (state.status == RewardsStatus.error) {
@@ -47,7 +64,7 @@ class RewardsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${reviews.length} avis publié${reviews.length > 1 ? 's' : ''}',
+                      '${reviews.length} test${reviews.length > 1 ? 's' : ''} effectué${reviews.length > 1 ? 's' : ''}',
                       style: TextStyle(color: colors.onPrimaryContainer),
                     ),
                   ],
@@ -55,9 +72,7 @@ class RewardsPage extends StatelessWidget {
               ),
               if (reviews.isEmpty)
                 const Expanded(
-                  child: Center(
-                    child: Text('Aucun avis pour le moment'),
-                  ),
+                  child: Center(child: Text('Aucun test pour le moment')),
                 )
               else
                 Expanded(
@@ -76,49 +91,68 @@ class RewardsPage extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      children: List.generate(
-                                        5,
-                                        (j) => Icon(
-                                          j < review.rating.round()
-                                              ? Icons.star_rounded
-                                              : Icons.star_outline_rounded,
-                                          size: 18,
-                                          color: Colors.amber,
-                                        ),
-                                      ),
-                                    ),
-                                    if (review.comment.isNotEmpty) ...[
-                                      const SizedBox(height: 8),
+                                    if (review.testName != null) ...[
                                       Text(
-                                        review.comment,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontSize: 13,
+                                        review.testName!,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
                                         ),
                                       ),
+                                      const SizedBox(height: 4),
                                     ],
+                                    Row(
+                                      children: [
+                                        if (review.testValidated)
+                                          Icon(
+                                            Icons.check_circle,
+                                            size: 18,
+                                            color: Colors.green,
+                                          )
+                                        else
+                                          Icon(
+                                            Icons.hourglass_empty,
+                                            size: 18,
+                                            color: Colors.orange,
+                                          ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          review.testValidated
+                                              ? 'Validé'
+                                              : 'En attente',
+                                          style: TextStyle(
+                                            color: review.testValidated
+                                                ? Colors.green
+                                                : Colors.orange,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: colors.primaryContainer,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  '+${review.rewardPoints}',
-                                  style: TextStyle(
-                                    color: colors.onPrimaryContainer,
-                                    fontWeight: FontWeight.bold,
+                              if (review.testValidated) ...[
+                                const SizedBox(width: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colors.primaryContainer,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    '+${review.rewardPoints}',
+                                    style: TextStyle(
+                                      color: colors.onPrimaryContainer,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ],
                           ),
                         ),
