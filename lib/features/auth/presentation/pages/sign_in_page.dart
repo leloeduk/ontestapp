@@ -7,6 +7,7 @@ import '../../../../core/services/connectivity_cubit.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/offline_banner.dart';
+import '../../../onboarding/data/services/onboarding_service.dart';
 import '../bloc/auth_bloc.dart';
 
 class SignInPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _termsAccepted = false;
 
   @override
   void dispose() {
@@ -30,6 +32,7 @@ class _SignInPageState extends State<SignInPage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      context.read<OnboardingService>().acceptTerms();
       context.read<AuthBloc>().add(
         AuthSignInRequested(
           email: _emailController.text.trim(),
@@ -99,11 +102,22 @@ class _SignInPageState extends State<SignInPage> {
                               obscureText: true,
                               validator: Validators.password,
                             ),
-                            const SizedBox(height: 24),
+                            CheckboxListTile(
+                              value: _termsAccepted,
+                              onChanged: (v) =>
+                                  setState(() => _termsAccepted = v!),
+                              title: const Text(
+                                "J'accepte les conditions d'utilisation",
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            const SizedBox(height: 8),
                             AppButton(
                               label: 'Se connecter',
                               isLoading: state.submitting,
-                              onPressed: _submit,
+                              onPressed: _termsAccepted ? _submit : null,
                             ),
                             const SizedBox(height: 16),
                             const Center(child: Text('ou connecte-toi avec')),

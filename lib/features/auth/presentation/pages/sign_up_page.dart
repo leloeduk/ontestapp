@@ -6,6 +6,7 @@ import '../../../../core/services/connectivity_cubit.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/offline_banner.dart';
+import '../../../onboarding/data/services/onboarding_service.dart';
 import '../bloc/auth_bloc.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _termsAccepted = false;
 
   @override
   void dispose() {
@@ -31,6 +33,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      context.read<OnboardingService>().acceptTerms();
       context.read<AuthBloc>().add(
             AuthSignUpRequested(
               name: _nameController.text.trim(),
@@ -110,11 +113,22 @@ class _SignUpPageState extends State<SignUpPage> {
                               obscureText: true,
                               validator: Validators.password,
                             ),
-                            const SizedBox(height: 24),
+                            CheckboxListTile(
+                              value: _termsAccepted,
+                              onChanged: (v) =>
+                                  setState(() => _termsAccepted = v!),
+                              title: const Text(
+                                "J'accepte les conditions d'utilisation",
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            const SizedBox(height: 8),
                             AppButton(
                               label: "S'inscrire",
                               isLoading: state.submitting,
-                              onPressed: _submit,
+                              onPressed: _termsAccepted ? _submit : null,
                             ),
                             const SizedBox(height: 16),
                             Row(
