@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/services/ad_service.dart';
 import '../../../../core/widgets/app_button.dart';
-import '../../../../core/widgets/stepped.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/test_app.dart';
 import '../bloc/review_bloc.dart';
@@ -24,6 +23,7 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
+  int _currentStep = 0;
   String? _screenshot1Path;
   String? _screenshot2Path;
 
@@ -107,91 +107,6 @@ class _ReviewPageState extends State<ReviewPage> {
         );
   }
 
-  List<ReviewStep> _buildSteps() {
-    return [
-      ReviewStep(
-        title: "Laisser un avis Google Play",
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              "Ouvre le Play Store, note l'application "
-              'et laisse un commentaire.',
-            ),
-            const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: _openPlayStoreReview,
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Ouvrir Google Play'),
-            ),
-          ],
-        ),
-      ),
-      ReviewStep(
-        title: "Capture d'écran 1 — Installation",
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              "Prends une capture d'écran de l'application installée.",
-            ),
-            if (_screenshot1Path != null) ...[
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.file(
-                  File(_screenshot1Path!),
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: _pickScreenshot1,
-              icon: const Icon(Icons.add_photo_alternate_outlined),
-              label: Text(
-                _screenshot1Path != null ? 'Modifier' : 'Sélectionner',
-              ),
-            ),
-          ],
-        ),
-      ),
-      ReviewStep(
-        title: "Capture d'écran 2 — Avis Google Play",
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              "Capture ton avis (note + commentaire) sur Google Play.",
-            ),
-            if (_screenshot2Path != null) ...[
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.file(
-                  File(_screenshot2Path!),
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: _pickScreenshot2,
-              icon: const Icon(Icons.add_photo_alternate_outlined),
-              label: Text(
-                _screenshot2Path != null ? 'Modifier' : 'Sélectionner',
-              ),
-            ),
-          ],
-        ),
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -219,7 +134,25 @@ class _ReviewPageState extends State<ReviewPage> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 32),
-                  ReviewStepper(steps: _buildSteps()),
+                  ..._buildIndicator(),
+                  const SizedBox(height: 16),
+                  _buildStepContent(),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      if (_currentStep > 0)
+                        OutlinedButton(
+                          onPressed: () => setState(() => _currentStep--),
+                          child: const Text('Précédent'),
+                        ),
+                      if (_currentStep > 0) const SizedBox(width: 12),
+                      if (_currentStep < 2)
+                        FilledButton(
+                          onPressed: () => setState(() => _currentStep++),
+                          child: const Text('Suivant'),
+                        ),
+                    ],
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Les points seront crédités après vérification '
@@ -243,5 +176,145 @@ class _ReviewPageState extends State<ReviewPage> {
         },
       ),
     );
+  }
+
+  List<Widget> _buildIndicator() {
+    const titles = [
+      "Laisser un avis Google Play",
+      "Capture d'écran 1 — Installation",
+      "Capture d'écran 2 — Avis Google Play",
+    ];
+    final colors = Theme.of(context).colorScheme;
+    return titles.asMap().entries.map((entry) {
+      final i = entry.key;
+      final title = entry.value;
+      final isActive = i == _currentStep;
+      final isCompleted = i < _currentStep;
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isCompleted
+                    ? colors.primary
+                    : isActive
+                        ? colors.primaryContainer
+                        : colors.surfaceContainerHighest,
+              ),
+              child: Center(
+                child: isCompleted
+                    ? Icon(Icons.check, size: 16, color: colors.onPrimary)
+                    : Text(
+                        '${i + 1}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: isActive
+                              ? colors.onPrimaryContainer
+                              : colors.onSurfaceVariant,
+                        ),
+                      ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: isActive || isCompleted
+                    ? colors.onSurface
+                    : colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+  Widget _buildStepContent() {
+    switch (_currentStep) {
+      case 0:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              "Ouvre le Play Store, note l'application "
+              'et laisse un commentaire.',
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: _openPlayStoreReview,
+              icon: const Icon(Icons.open_in_new),
+              label: const Text('Ouvrir Google Play'),
+            ),
+          ],
+        );
+      case 1:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              "Prends une capture d'écran de l'application installée.",
+            ),
+            if (_screenshot1Path != null) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(
+                  File(_screenshot1Path!),
+                  height: 120,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _pickScreenshot1,
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              label: Text(
+                _screenshot1Path != null ? 'Modifier' : 'Sélectionner',
+              ),
+            ),
+          ],
+        );
+      case 2:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              "Capture ton avis (note + commentaire) sur Google Play.",
+            ),
+            if (_screenshot2Path != null) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(
+                  File(_screenshot2Path!),
+                  height: 120,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _pickScreenshot2,
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              label: Text(
+                _screenshot2Path != null ? 'Modifier' : 'Sélectionner',
+              ),
+            ),
+          ],
+        );
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }
