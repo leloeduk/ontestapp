@@ -95,23 +95,22 @@ class _ReviewPageState extends State<ReviewPage> {
     }
     final user = context.read<AuthBloc>().state.user;
     context.read<ReviewBloc>().add(
-      ReviewSubmitted(
-        userId: user.uid,
-        userName: user.name,
-        testId: widget.test.id,
-        testName: widget.test.title,
-        screenshot1Path: _screenshot1Path!,
-        screenshot2Path: _screenshot2Path!,
-        appName: widget.test.title,
-      ),
-    );
+          ReviewSubmitted(
+            userId: user.uid,
+            userName: user.name,
+            testId: widget.test.id,
+            testName: widget.test.title,
+            screenshot1Path: _screenshot1Path!,
+            screenshot2Path: _screenshot2Path!,
+            appName: widget.test.title,
+          ),
+        );
   }
 
-  List<Step> _buildSteps() {
+  List<ReviewStep> _buildSteps() {
     return [
-      Step(
-        title: const Text('Étape 1'),
-        subtitle: const Text("Laisser un avis Google Play"),
+      ReviewStep(
+        title: "Laisser un avis Google Play",
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -127,11 +126,9 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
           ],
         ),
-        isActive: true,
       ),
-      Step(
-        title: const Text('Étape 2'),
-        subtitle: const Text("Capture d'écran 1 — Installation"),
+      ReviewStep(
+        title: "Capture d'écran 1 — Installation",
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -160,11 +157,9 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
           ],
         ),
-        isActive: true,
       ),
-      Step(
-        title: const Text('Étape 3'),
-        subtitle: const Text("Capture d'écran 2 — Avis Google Play"),
+      ReviewStep(
+        title: "Capture d'écran 2 — Avis Google Play",
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -193,7 +188,6 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
           ],
         ),
-        isActive: true,
       ),
     ];
   }
@@ -231,7 +225,10 @@ class _ReviewPageState extends State<ReviewPage> {
                     'Les points seront crédités après vérification '
                     'manuelle de tes captures.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   AppButton(

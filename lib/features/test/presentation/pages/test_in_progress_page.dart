@@ -21,12 +21,11 @@ class TestInProgressPage extends StatelessWidget {
     }
   }
 
-  List<Step> _buildSteps(BuildContext context) {
+  List<ReviewStep> _buildSteps(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return [
-      Step(
-        title: const Text('Étape 1'),
-        subtitle: const Text('Ouvrir le Play Store'),
+      ReviewStep(
+        title: 'Ouvrir le Play Store',
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -42,20 +41,16 @@ class TestInProgressPage extends StatelessWidget {
             ),
           ],
         ),
-        isActive: true,
       ),
-      Step(
-        title: const Text('Étape 2'),
-        subtitle: const Text('Installer et tester'),
+      ReviewStep(
+        title: 'Installer et tester',
         content: const Text(
           "Installe l'application depuis le Play Store et utilise-la "
           'quelques instants pour vérifier son bon fonctionnement.',
         ),
-        isActive: true,
       ),
-      Step(
-        title: const Text('Étape 3'),
-        subtitle: const Text('Donner ton avis'),
+      ReviewStep(
+        title: 'Donner ton avis',
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -72,7 +67,6 @@ class TestInProgressPage extends StatelessWidget {
             ),
           ],
         ),
-        isActive: true,
       ),
     ];
   }

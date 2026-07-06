@@ -3,7 +3,7 @@
 class ReviewStepper extends StatefulWidget {
   const ReviewStepper({super.key, required this.steps});
 
-  final List<Step> steps;
+  final List<ReviewStep> steps;
 
   @override
   State<ReviewStepper> createState() => _ReviewStepperState();
@@ -12,44 +12,95 @@ class ReviewStepper extends StatefulWidget {
 class _ReviewStepperState extends State<ReviewStepper> {
   int _currentStep = 0;
 
-  int get _lastStep => widget.steps.length - 1;
-
   @override
   Widget build(BuildContext context) {
-    return Stepper(
-      currentStep: _currentStep,
-      onStepContinue: () {
-        if (_currentStep < _lastStep) {
-          setState(() => _currentStep += 1);
-        }
-      },
-      onStepCancel: () {
-        if (_currentStep > 0) {
-          setState(() => _currentStep -= 1);
-        }
-      },
-      onStepTapped: (step) => setState(() => _currentStep = step),
-      controlsBuilder: (context, details) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: Row(
-            children: [
-              if (_currentStep < _lastStep)
-                FilledButton(
-                  onPressed: details.onStepContinue,
-                  child: const Text('Suivant'),
+    final colors = Theme.of(context).colorScheme;
+    final step = widget.steps[_currentStep];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ...widget.steps.asMap().entries.map((entry) {
+          final i = entry.key;
+          final s = entry.value;
+          final isActive = i == _currentStep;
+          final isCompleted = i < _currentStep;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isCompleted
+                        ? colors.primary
+                        : isActive
+                            ? colors.primaryContainer
+                            : colors.surfaceContainerHighest,
+                  ),
+                  child: Center(
+                    child: isCompleted
+                        ? Icon(Icons.check, size: 16, color: colors.onPrimary)
+                        : Text(
+                            '${i + 1}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: isActive
+                                  ? colors.onPrimaryContainer
+                                  : colors.onSurfaceVariant,
+                            ),
+                          ),
+                  ),
                 ),
-              if (_currentStep > 0) const SizedBox(width: 12),
-              if (_currentStep > 0)
-                OutlinedButton(
-                  onPressed: details.onStepCancel,
-                  child: const Text('Pr├⌐c├⌐dent'),
+                const SizedBox(width: 12),
+                Text(
+                  s.title,
+                  style: TextStyle(
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                    color: isActive
+                        ? colors.onSurface
+                        : isCompleted
+                            ? colors.onSurface
+                            : colors.onSurfaceVariant,
+                  ),
                 ),
-            ],
-          ),
-        );
-      },
-      steps: widget.steps,
+              ],
+            ),
+          );
+        }),
+        const SizedBox(height: 16),
+        step.content,
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            if (_currentStep > 0)
+              OutlinedButton(
+                onPressed: () => setState(() => _currentStep--),
+                child: const Text('Précédent'),
+              ),
+            if (_currentStep > 0) const SizedBox(width: 12),
+            if (_currentStep < widget.steps.length - 1)
+              FilledButton(
+                onPressed: () => setState(() => _currentStep++),
+                child: const Text('Suivant'),
+              ),
+          ],
+        ),
+      ],
     );
   }
+}
+
+class ReviewStep {
+  const ReviewStep({
+    required this.title,
+    required this.content,
+  });
+
+  final String title;
+  final Widget content;
 }
