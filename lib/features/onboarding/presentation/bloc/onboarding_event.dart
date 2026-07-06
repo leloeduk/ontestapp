@@ -24,3 +24,7 @@ class OnboardingPageChanged extends OnboardingEvent {
 class OnboardingCompleted extends OnboardingEvent {
   const OnboardingCompleted();
 }
+
+class OnboardingTermsAccepted extends OnboardingEvent {
+  const OnboardingTermsAccepted();
+}

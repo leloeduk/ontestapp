@@ -22,6 +22,7 @@ import '../../features/home/presentation/bloc/home_bloc.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/onboarding/presentation/pages/terms_page.dart';
 import '../../features/rewards/presentation/bloc/rewards_bloc.dart';
 import '../../features/rewards/presentation/pages/rewards_page.dart';
 import '../../features/test/data/repositories/review_repository.dart';
@@ -65,10 +66,14 @@ class AppRouter {
           return loc == '/splash' ? null : '/splash';
         }
 
-        final loggingIn = loc == '/sign-in' || loc == '/sign-up';
+        final onAuthPages =
+            loc == '/sign-in' || loc == '/sign-up' || loc == '/terms';
 
         if (authStatus == AuthStatus.unauthenticated) {
-          return loggingIn ? null : '/sign-in';
+          if (!onboardingBloc.state.termsAccepted) {
+            return loc == '/terms' ? null : '/terms';
+          }
+          return onAuthPages ? null : '/sign-in';
         }
 
         // Utilisateur authentifié.
@@ -80,7 +85,7 @@ class AppRouter {
         }
 
         // Tout est en ordre : quitter les écrans d'entrée.
-        if (loggingIn ||
+        if (onAuthPages ||
             loc == '/splash' ||
             loc == '/onboarding' ||
             loc == '/join-group') {
@@ -95,6 +100,10 @@ class AppRouter {
         GoRoute(
           path: '/onboarding',
           builder: (_, __) => const OnboardingPage(),
+        ),
+        GoRoute(
+          path: '/terms',
+          builder: (_, __) => const TermsPage(),
         ),
         GoRoute(
           path: '/join-group',

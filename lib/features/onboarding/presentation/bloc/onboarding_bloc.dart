@@ -13,6 +13,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<OnboardingStarted>(_onStarted);
     on<OnboardingPageChanged>(_onPageChanged);
     on<OnboardingCompleted>(_onCompleted);
+    on<OnboardingTermsAccepted>(_onTermsAccepted);
 
     add(const OnboardingStarted());
   }
@@ -24,9 +25,19 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     Emitter<OnboardingState> emit,
   ) async {
     final seen = await _service.isSeen();
+    final terms = await _service.isTermsAccepted();
     emit(state.copyWith(
       status: seen ? OnboardingStatus.seen : OnboardingStatus.notSeen,
+      termsAccepted: terms,
     ));
+  }
+
+  Future<void> _onTermsAccepted(
+    OnboardingTermsAccepted event,
+    Emitter<OnboardingState> emit,
+  ) async {
+    await _service.acceptTerms();
+    emit(state.copyWith(termsAccepted: true));
   }
 
   void _onPageChanged(
