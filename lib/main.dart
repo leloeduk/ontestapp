@@ -45,6 +45,7 @@ class _MyAppState extends State<MyApp> {
   // Services
   final _userService = UserService();
   final _storageService = StorageService();
+  final _onboardingService = OnboardingService();
 
   // Repositories
   late final AuthRepository _authRepository = AuthRepository(
@@ -63,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   // Blocs globaux (nécessaires au routeur)
   late final AuthBloc _authBloc = AuthBloc(authRepository: _authRepository);
   late final OnboardingBloc _onboardingBloc =
-      OnboardingBloc(service: OnboardingService());
+      OnboardingBloc(service: _onboardingService);
   late final ConnectivityCubit _connectivityCubit = ConnectivityCubit();
 
   late final GoRouter _router = AppRouter.createRouter(
@@ -89,6 +90,7 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider.value(value: _reviewRepository),
         RepositoryProvider.value(value: _userService),
         RepositoryProvider.value(value: _storageService),
+        RepositoryProvider.value(value: _onboardingService),
       ],
       child: MultiBlocProvider(
         providers: [

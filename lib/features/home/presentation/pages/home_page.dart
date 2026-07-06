@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
     final canAdd = user.points >= 50;
 
     return Scaffold(
+      appBar: AppBar(title: const Text('OntestApp')),
       drawer: const AppDrawer(),
       body: Column(
         children: [
@@ -107,17 +108,14 @@ class _TestsTab extends StatelessWidget {
             ),
             const SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverToBoxAdapter(
-                child: _EarnCard(),
-              ),
+              sliver: SliverToBoxAdapter(child: _EarnCard()),
             ),
             const SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverToBoxAdapter(
                 child: Text(
                   'Applications à tester',
-                  style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -178,8 +176,11 @@ class _EarnCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(Icons.monetization_on_rounded,
-                  color: colors.onTertiaryContainer, size: 40),
+              Icon(
+                Icons.monetization_on_rounded,
+                color: colors.onTertiaryContainer,
+                size: 40,
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -197,14 +198,19 @@ class _EarnCard extends StatelessWidget {
                       'Regarde une vidéo et gagne 5 points',
                       style: TextStyle(
                         fontSize: 13,
-                        color: colors.onTertiaryContainer.withValues(alpha: 0.7),
+                        color: colors.onTertiaryContainer.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios_rounded,
-                  size: 16, color: colors.onTertiaryContainer),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: colors.onTertiaryContainer,
+              ),
             ],
           ),
         ),
