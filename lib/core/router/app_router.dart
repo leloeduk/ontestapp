@@ -22,6 +22,7 @@ import '../../features/home/presentation/bloc/home_bloc.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/onboarding/presentation/pages/terms_read_page.dart';
 import '../../features/rewards/presentation/bloc/rewards_bloc.dart';
 import '../../features/rewards/presentation/pages/rewards_page.dart';
 import '../../features/test/data/repositories/review_repository.dart';
@@ -92,6 +93,10 @@ class AppRouter {
         GoRoute(path: '/splash', builder: (_, __) => const SplashPage()),
         GoRoute(path: '/sign-in', builder: (_, __) => const SignInPage()),
         GoRoute(path: '/sign-up', builder: (_, __) => const SignUpPage()),
+        GoRoute(
+          path: '/terms-read',
+          builder: (_, __) => const TermsReadPage(),
+        ),
         GoRoute(
           path: '/onboarding',
           builder: (_, __) => const OnboardingPage(),

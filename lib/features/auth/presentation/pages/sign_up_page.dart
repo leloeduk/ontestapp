@@ -117,9 +117,30 @@ class _SignUpPageState extends State<SignUpPage> {
                               value: _termsAccepted,
                               onChanged: (v) =>
                                   setState(() => _termsAccepted = v!),
-                              title: const Text(
-                                "J'accepte les conditions d'utilisation",
-                                style: TextStyle(fontSize: 14),
+                              title: Text.rich(
+                                TextSpan(
+                                  style: const TextStyle(fontSize: 14),
+                                  children: [
+                                    const TextSpan(text: "J'accepte les "),
+                                    WidgetSpan(
+                                      alignment: PlaceholderAlignment.middle,
+                                      child: GestureDetector(
+                                        onTap: () =>
+                                            context.push('/terms-read'),
+                                        child: Text(
+                                          'conditions d\'utilisation',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,

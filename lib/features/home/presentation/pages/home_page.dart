@@ -12,6 +12,8 @@ import '../../../profile/presentation/pages/profile_page.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/points_header.dart';
 import '../widgets/test_card.dart';
+import 'history_page.dart';
+import 'my_tests_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,7 +39,12 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: IndexedStack(
               index: _index,
-              children: const [_TestsTab(), ProfilePage()],
+              children: const [
+                _TestsTab(),
+                MyTestsPage(),
+                HistoryPage(),
+                ProfilePage(),
+              ],
             ),
           ),
           const BannerAdWidget(),
@@ -51,6 +58,16 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
             label: 'Accueil',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.phone_android_outlined),
+            selectedIcon: Icon(Icons.phone_android_rounded),
+            label: 'Mes tests',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history_outlined),
+            selectedIcon: Icon(Icons.history_rounded),
+            label: 'Historique',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

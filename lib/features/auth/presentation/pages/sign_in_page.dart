@@ -42,6 +42,11 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  void _googleSignIn() {
+    context.read<OnboardingService>().acceptTerms();
+    context.read<AuthBloc>().add(const AuthGoogleSignInRequested());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,9 +111,30 @@ class _SignInPageState extends State<SignInPage> {
                               value: _termsAccepted,
                               onChanged: (v) =>
                                   setState(() => _termsAccepted = v!),
-                              title: const Text(
-                                "J'accepte les conditions d'utilisation",
-                                style: TextStyle(fontSize: 14),
+                              title: Text.rich(
+                                TextSpan(
+                                  style: const TextStyle(fontSize: 14),
+                                  children: [
+                                    const TextSpan(text: "J'accepte les "),
+                                    WidgetSpan(
+                                      alignment: PlaceholderAlignment.middle,
+                                      child: GestureDetector(
+                                        onTap: () =>
+                                            context.push('/terms-read'),
+                                        child: Text(
+                                          'conditions d\'utilisation',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,
@@ -133,9 +159,7 @@ class _SignInPageState extends State<SignInPage> {
                                   ?.copyWith(
                                     color: Theme.of(context).colorScheme.primary,
                                   ),
-                              onPressed: () => context.read<AuthBloc>().add(
-                                const AuthGoogleSignInRequested(),
-                              ),
+                              onPressed: _termsAccepted ? _googleSignIn : () {},
                             ),
                             const SizedBox(height: 24),
                             Row(
