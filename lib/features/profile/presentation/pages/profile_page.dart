@@ -35,8 +35,9 @@ class _ProfilePageState extends State<ProfilePage> {
     _lastLoad = DateTime.now();
     final uid = context.read<AuthBloc>().state.user.uid;
     try {
-      final reviews =
-          await context.read<ReviewRepository>().getReviewsByUser(uid);
+      final reviews = await context.read<ReviewRepository>().getReviewsByUser(
+        uid,
+      );
       if (mounted) {
         setState(() {
           _reviews = reviews;
@@ -75,18 +76,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_reviews != null && !_loading &&
+    if (_reviews != null &&
+        !_loading &&
         DateTime.now().difference(_lastLoad ?? DateTime(0)).inSeconds > 3) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _loadReviews());
     }
     final user = context.watch<AuthBloc>().state.user;
     final colors = Theme.of(context).colorScheme;
 
-    final validatedCount =
-        _reviews?.where((r) => r.testValidated).length ?? 0;
-    final pendingCount =
-        _reviews?.where((r) => !r.testValidated).length ?? 0;
-    final validPoints = _reviews
+    final validatedCount = _reviews?.where((r) => r.testValidated).length ?? 0;
+    final pendingCount = _reviews?.where((r) => !r.testValidated).length ?? 0;
+    final validPoints =
+        _reviews
             ?.where((r) => r.testValidated)
             .fold<int>(0, (sum, r) => sum + r.rewardPoints) ??
         0;
@@ -104,8 +105,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   backgroundColor: colors.primaryContainer,
                   backgroundImage:
                       (user.photoUrl != null && user.photoUrl!.isNotEmpty)
-                          ? NetworkImage(user.photoUrl!)
-                          : null,
+                      ? NetworkImage(user.photoUrl!)
+                      : null,
                   child: (user.photoUrl == null || user.photoUrl!.isEmpty)
                       ? Text(
                           user.name.isNotEmpty
@@ -153,7 +154,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(width: 8),
                 InkWell(
                   onTap: () => _showEditDialog(context, user),
-                  child: Icon(Icons.edit, size: 18, color: colors.primary),
+                  child: Icon(Icons.edit, size: 35, color: colors.primary),
                 ),
               ],
             ),
@@ -218,6 +219,37 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
+          SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () {
+                if (user.points < 50) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('50 points requis pour ajouter un test'),
+                    ),
+                  );
+                } else if (user.plan == 'free' &&
+                    (_reviews?.length ?? 0) >= 2) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text('Limite du plan gratuit atteinte (2 tests max)'),
+                    ),
+                  );
+                } else {
+                  context.push('/add-test');
+                }
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Ajouter un test'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -257,23 +289,17 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           if (_loading)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: LoadingView(),
-            )
+            const Padding(padding: EdgeInsets.all(32), child: LoadingView())
           else if (_reviews != null && _reviews!.isNotEmpty) ...[
             const SizedBox(height: 24),
             Text(
               'Dernières soumissions',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            ...(_reviews!.take(5).map(
-              (review) => _SubmissionTile(review: review),
-            )),
+            ...(_reviews!
+                .take(5)
+                .map((review) => _SubmissionTile(review: review))),
           ],
           const SizedBox(height: 16),
           SizedBox(
@@ -295,70 +321,67 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-  Future<void> _showEditDialog(BuildContext context, AppUser user) async {
-    final nameCtl = TextEditingController(text: user.name);
-    String? newPhotoUrl = user.photoUrl;
+Future<void> _showEditDialog(BuildContext context, AppUser user) async {
+  final nameCtl = TextEditingController(text: user.name);
+  String? newPhotoUrl = user.photoUrl;
 
-    final submitted = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Modifier le profil'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppTextField(
-              controller: nameCtl,
-              label: 'Nom',
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  final picker = ImagePicker();
-                  final picked = await picker.pickImage(
-                    source: ImageSource.gallery,
-                    imageQuality: 80,
+  final submitted = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Modifier le profil'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppTextField(controller: nameCtl, label: 'Nom'),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                final picker = ImagePicker();
+                final picked = await picker.pickImage(
+                  source: ImageSource.gallery,
+                  imageQuality: 80,
+                );
+                if (picked != null) {
+                  final userService = ctx.read<UserService>();
+                  final uid = ctx.read<AuthBloc>().state.user.uid;
+                  newPhotoUrl = await userService.uploadUserImage(
+                    uid: uid,
+                    filePath: picked.path,
                   );
-                  if (picked != null) {
-                    final userService = ctx.read<UserService>();
-                    final uid = ctx.read<AuthBloc>().state.user.uid;
-                    newPhotoUrl = await userService.uploadUserImage(
-                      uid: uid,
-                      filePath: picked.path,
-                    );
-                    if (ctx.mounted) Navigator.pop(ctx);
-                  }
-                },
-                icon: const Icon(Icons.add_photo_alternate_outlined),
-                label: Text(
-                  newPhotoUrl != null
-                      ? 'Changer la photo'
-                      : 'Ajouter une photo',
-                ),
+                  if (ctx.mounted) Navigator.pop(ctx);
+                }
+              },
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              label: Text(
+                newPhotoUrl != null ? 'Changer la photo' : 'Ajouter une photo',
               ),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Enregistrer'),
           ),
         ],
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Annuler'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Enregistrer'),
+        ),
+      ],
+    ),
+  );
+  if (submitted == true && context.mounted) {
+    context.read<AuthBloc>().add(
+      AuthUpdateProfileRequested(
+        name: nameCtl.text.trim(),
+        photoUrl: newPhotoUrl,
+      ),
     );
-    if (submitted == true && context.mounted) {
-      context.read<AuthBloc>().add(AuthUpdateProfileRequested(
-            name: nameCtl.text.trim(),
-            photoUrl: newPhotoUrl,
-          ));
-    }
   }
+}
 
 class _InfoCard extends StatelessWidget {
   const _InfoCard({
@@ -393,10 +416,7 @@ class _InfoCard extends StatelessWidget {
               Text(
                 label,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 11,
-                ),
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
               ),
             ],
           ),
@@ -421,8 +441,7 @@ class _SubmissionTile extends StatelessWidget {
           review.testValidated
               ? Icons.check_circle_rounded
               : Icons.hourglass_empty_rounded,
-          color:
-              review.testValidated ? Colors.green : Colors.orange,
+          color: review.testValidated ? Colors.green : Colors.orange,
           size: 28,
         ),
         title: Text(
@@ -430,7 +449,9 @@ class _SubmissionTile extends StatelessWidget {
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          review.testValidated ? 'Validé (+${review.rewardPoints} pts)' : 'En attente de validation',
+          review.testValidated
+              ? 'Validé (+${review.rewardPoints} pts)'
+              : 'En attente de validation',
           style: TextStyle(
             fontSize: 12,
             color: review.testValidated ? Colors.green : Colors.orange,
@@ -438,7 +459,10 @@ class _SubmissionTile extends StatelessWidget {
         ),
         trailing: review.testValidated
             ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: colors.primaryContainer,
                   borderRadius: BorderRadius.circular(12),

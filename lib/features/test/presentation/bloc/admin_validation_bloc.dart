@@ -89,14 +89,7 @@ class AdminValidationBloc
     emit(state.copyWith(status: AdminValidationStatus.loading));
     try {
       final reviews = await _reviewRepository.getUnvalidatedReviews();
-      final userIds = reviews.map((r) => r.userId).toSet().toList();
-      final users = await Future.wait(
-        userIds.map((id) => _userService.getUser(id)),
-      );
-      final userTestsCount = <String, int>{};
-      for (final u in users) {
-        if (u != null) userTestsCount[u.uid] = u.testsDone;
-      }
+      final userTestsCount = await _loadUserTestsCount(reviews);
       emit(state.copyWith(
         status: AdminValidationStatus.loaded,
         reviews: reviews,
@@ -122,16 +115,8 @@ class AdminValidationBloc
         userId: event.userId,
         rewardPoints: event.rewardPoints,
       );
-      final userIds =
-          state.reviews.map((r) => r.userId).toSet().toList();
-      final users = await Future.wait(
-        userIds.map((id) => _userService.getUser(id)),
-      );
-      final userTestsCount = <String, int>{};
-      for (final u in users) {
-        if (u != null) userTestsCount[u.uid] = u.testsDone;
-      }
       final reviews = await _reviewRepository.getUnvalidatedReviews();
+      final userTestsCount = await _loadUserTestsCount(reviews);
       emit(state.copyWith(
         status: AdminValidationStatus.loaded,
         reviews: reviews,
@@ -143,5 +128,17 @@ class AdminValidationBloc
         errorMessage: 'Erreur lors de la validation',
       ));
     }
+  }
+
+  Future<Map<String, int>> _loadUserTestsCount(List<ReviewModel> reviews) async {
+    final userIds = reviews.map((r) => r.userId).toSet().toList();
+    final results = await Future.wait(
+      userIds.map((id) => _userService.getUser(id).catchError((_) => null)),
+    );
+    final userTestsCount = <String, int>{};
+    for (final u in results) {
+      if (u != null) userTestsCount[u.uid] = u.testsDone;
+    }
+    return userTestsCount;
   }
 }

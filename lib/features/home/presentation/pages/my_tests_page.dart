@@ -118,6 +118,8 @@ class _MyTestsPageState extends State<MyTestsPage> {
             ],
           ),
           const SizedBox(height: 16),
+          _AddTestButton(userTestCount: tests.length),
+          const SizedBox(height: 12),
           if (tests.isEmpty)
             const Padding(
               padding: EdgeInsets.only(top: 60),
@@ -167,6 +169,45 @@ class _MyTestsPageState extends State<MyTestsPage> {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _AddTestButton extends StatelessWidget {
+  const _AddTestButton({required this.userTestCount});
+
+  final int userTestCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<AuthBloc>().state.user;
+
+    final canAdd = user.points >= 50 &&
+        (user.plan != 'free' || userTestCount < 2);
+
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        onPressed: () {
+          if (user.points < 50) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('50 points requis pour ajouter un test'),
+              ),
+            );
+          } else if (user.plan == 'free' && userTestCount >= 2) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Limite du plan gratuit atteinte (2 tests max)'),
+              ),
+            );
+          } else {
+            context.push('/add-test');
+          }
+        },
+        icon: Icon(canAdd ? Icons.add : Icons.lock_outline),
+        label: const Text('Ajouter un test'),
       ),
     );
   }

@@ -42,7 +42,9 @@ class _HomePageState extends State<HomePage> {
       final uid = context.read<AuthBloc>().state.user.uid;
       final all = await context.read<TestRepository>().getTests();
       if (mounted) {
-        setState(() => _userTestCount = all.where((t) => t.userId == uid).length);
+        setState(
+          () => _userTestCount = all.where((t) => t.userId == uid).length,
+        );
       }
     } catch (_) {}
   }
@@ -56,7 +58,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   String _currentLocation() {
-    return GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
+    return GoRouter.of(
+      context,
+    ).routerDelegate.currentConfiguration.uri.toString();
   }
 
   void _onRouteChanged() {
@@ -94,8 +98,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthBloc>().state.user;
-    final canAdd = user.points >= 50 &&
-        (user.plan != 'free' || _userTestCount < 2);
+    final canAdd =
+        user.points >= 50 && (user.plan != 'free' || _userTestCount < 2);
 
     return Scaffold(
       appBar: AppBar(
@@ -105,6 +109,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(
               canAdd ? Icons.add_circle_outline : Icons.add_circle,
               color: canAdd ? null : Colors.grey,
+              size: 35,
             ),
             tooltip: 'Ajouter un test',
             onPressed: () => _onAddTest(context),
