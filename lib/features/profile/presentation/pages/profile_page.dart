@@ -18,15 +18,19 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   List<ReviewModel>? _reviews;
-  bool _loading = true;
+  bool _loading = false;
+  DateTime? _lastLoad;
 
   @override
   void initState() {
     super.initState();
-    _loadReviews();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadReviews());
   }
 
   Future<void> _loadReviews() async {
+    if (_loading) return;
+    _loading = true;
+    _lastLoad = DateTime.now();
     final uid = context.read<AuthBloc>().state.user.uid;
     try {
       final reviews =
@@ -69,6 +73,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_reviews != null && !_loading &&
+        DateTime.now().difference(_lastLoad ?? DateTime(0)).inSeconds > 3) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadReviews());
+    }
     final user = context.watch<AuthBloc>().state.user;
     final colors = Theme.of(context).colorScheme;
 

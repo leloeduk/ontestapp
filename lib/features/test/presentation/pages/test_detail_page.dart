@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +9,6 @@ import '../../../../core/services/ad_service.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
-import '../../../auth/data/services/user_service.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/test_app.dart';
 import '../bloc/edit_test_bloc.dart';
@@ -24,68 +23,48 @@ class TestDetailPage extends StatefulWidget {
 }
 
 class _TestDetailPageState extends State<TestDetailPage> {
-  RewardedAd? _rewardedAd;
+  InterstitialAd? _interstitialAd;
   bool _isAdLoading = false;
 
   @override
   void dispose() {
-    _rewardedAd?.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
   Future<void> _startTest(TestApp test) async {
     setState(() => _isAdLoading = true);
 
-    final ad = await AdService.loadRewardedAd();
-    if (ad == null) {
-      if (mounted) {
-        setState(() => _isAdLoading = false);
-        context.push('/test/${test.id}/progress', extra: test);
+    final shouldShowAd = Random().nextBool();
+    if (shouldShowAd) {
+      final ad = await AdService.loadInterstitialAd();
+      if (ad != null && mounted) {
+        ad.fullScreenContentCallback = FullScreenContentCallback(
+          onAdDismissedFullScreenContent: (_) {
+            ad.dispose();
+            _interstitialAd = null;
+            if (mounted) {
+              setState(() => _isAdLoading = false);
+              context.push('/test/${test.id}/progress', extra: test);
+            }
+          },
+          onAdFailedToShowFullScreenContent: (_, __) {
+            ad.dispose();
+            _interstitialAd = null;
+            if (mounted) {
+              setState(() => _isAdLoading = false);
+              context.push('/test/${test.id}/progress', extra: test);
+            }
+          },
+        );
+        ad.show();
+        _interstitialAd = ad;
+        return;
       }
-      return;
     }
-    if (!mounted) return;
-
-    final completer = Completer<void>();
-    _rewardedAd = ad;
-
-    ad.fullScreenContentCallback = FullScreenContentCallback(
-      onAdDismissedFullScreenContent: (ad) {
-        ad.dispose();
-        _rewardedAd = null;
-        if (!completer.isCompleted) completer.complete();
-      },
-      onAdFailedToShowFullScreenContent: (ad, error) {
-        ad.dispose();
-        _rewardedAd = null;
-        if (!completer.isCompleted) completer.complete();
-      },
-    );
-
-    final uid = context.read<AuthBloc>().state.user.uid;
-    final userService = context.read<UserService>();
-    bool rewarded = false;
-
-    ad.show(
-      onUserEarnedReward: (ad, reward) {
-        rewarded = true;
-        userService.addPointsForReward(uid, points: 5);
-      },
-    );
-
-    await completer.future;
 
     if (mounted) {
       setState(() => _isAdLoading = false);
-      if (rewarded) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('+5 points pour avoir regardé la vidéo !'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
       context.push('/test/${test.id}/progress', extra: test);
     }
   }
@@ -353,13 +332,13 @@ class _TestDetailPageState extends State<TestDetailPage> {
                     ),
                   ),
                 ),
-                Padding(
+                  Padding(
                   padding: const EdgeInsets.all(24),
                   child: AppButton(
                     label: 'Tester maintenant',
                     icon: Icons.play_arrow_rounded,
                     isLoading: _isAdLoading,
-                    onPressed: () => _startTest(test),
+                    onPressed: _isAdLoading ? null : () => _startTest(test),
                   ),
                 ),
               ],

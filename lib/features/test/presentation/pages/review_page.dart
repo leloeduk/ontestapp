@@ -38,16 +38,28 @@ class _ReviewPageState extends State<ReviewPage> {
       ad.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (ad) {
           ad.dispose();
-          if (mounted) context.go('/test/${widget.test.id}/confirmation');
+          if (mounted) {
+            context.go(
+              '/test/${widget.test.id}/confirmation',
+              extra: widget.test,
+            );
+          }
         },
         onAdFailedToShowFullScreenContent: (ad, error) {
           ad.dispose();
-          if (mounted) context.go('/test/${widget.test.id}/confirmation');
+          if (mounted) {
+            context.go(
+              '/test/${widget.test.id}/confirmation',
+              extra: widget.test,
+            );
+          }
         },
       );
       ad.show();
     } else {
-      if (mounted) context.go('/test/${widget.test.id}/confirmation');
+      if (mounted) {
+        context.go('/test/${widget.test.id}/confirmation', extra: widget.test);
+      }
     }
   }
 
@@ -95,16 +107,16 @@ class _ReviewPageState extends State<ReviewPage> {
     }
     final user = context.read<AuthBloc>().state.user;
     context.read<ReviewBloc>().add(
-          ReviewSubmitted(
-            userId: user.uid,
-            userName: user.name,
-            testId: widget.test.id,
-            testName: widget.test.title,
-            screenshot1Path: _screenshot1Path!,
-            screenshot2Path: _screenshot2Path!,
-            appName: widget.test.title,
-          ),
-        );
+      ReviewSubmitted(
+        userId: user.uid,
+        userName: user.name,
+        testId: widget.test.id,
+        testName: widget.test.title,
+        screenshot1Path: _screenshot1Path!,
+        screenshot2Path: _screenshot2Path!,
+        appName: widget.test.title,
+      ),
+    );
   }
 
   @override
@@ -138,7 +150,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   const SizedBox(height: 16),
                   _buildStepContent(),
                   const SizedBox(height: 16),
-                  Row(
+                  Wrap(
                     children: [
                       if (_currentStep > 0)
                         OutlinedButton(
@@ -158,10 +170,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     'Les points seront crédités après vérification '
                     'manuelle de tes captures.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 13,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                   ),
                   const SizedBox(height: 16),
                   AppButton(
@@ -203,8 +212,8 @@ class _ReviewPageState extends State<ReviewPage> {
                 color: isCompleted
                     ? colors.primary
                     : isActive
-                        ? colors.primaryContainer
-                        : colors.surfaceContainerHighest,
+                    ? colors.primaryContainer
+                    : colors.surfaceContainerHighest,
               ),
               child: Center(
                 child: isCompleted

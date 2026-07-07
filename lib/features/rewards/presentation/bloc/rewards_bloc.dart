@@ -24,8 +24,9 @@ class RewardsBloc extends Bloc<RewardsEvent, RewardsState> {
     emit(const RewardsState(status: RewardsStatus.loading));
     try {
       final reviews = await _reviewRepository.getReviewsByUser(event.userId);
+      final validated = reviews.where((r) => r.testValidated).toList();
       final totalPoints =
-          reviews.fold<int>(0, (sum, r) => sum + r.rewardPoints);
+          validated.fold<int>(0, (sum, r) => sum + r.rewardPoints);
       emit(RewardsState(
         status: RewardsStatus.loaded,
         reviews: reviews,

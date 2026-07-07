@@ -54,6 +54,12 @@ class AppDrawer extends StatelessWidget {
               title: const Text('Mon historique'),
               onTap: () => _navigate(context, '/rewards'),
             ),
+            if (user.isAdmin)
+              ListTile(
+                leading: const Icon(Icons.verified_rounded),
+                title: const Text('Validation admin'),
+                onTap: () => _navigate(context, '/admin/validation'),
+              ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.info_outline_rounded),

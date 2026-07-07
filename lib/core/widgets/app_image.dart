@@ -22,36 +22,51 @@ class AppImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl.startsWith('data:')) {
-      final parts = imageUrl.split(',');
-      if (parts.length == 2) {
-        final bytes = base64Decode(parts[1]);
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(borderRadius ?? 0),
-          child: Image.memory(
-            bytes,
-            width: width,
-            height: height,
-            fit: fit ?? BoxFit.cover,
-            errorBuilder: (_, __, ___) => _placeholder(context),
-          ),
-        );
-      }
-    }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius ?? 0),
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-        width: width,
-        height: height,
-        fit: fit ?? BoxFit.cover,
-        placeholder: (_, __) => _placeholder(context),
-        errorWidget: (_, __, ___) => _placeholder(context),
+    if (imageUrl.isEmpty) return _placeholder();
+
+    final imageWidget = imageUrl.startsWith('data:')
+        ? _buildBase64Image()
+        : _buildNetworkImage();
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius ?? 0),
+        child: imageWidget,
       ),
     );
   }
 
-  Widget _placeholder(BuildContext context) {
+  Widget _buildBase64Image() {
+    final parts = imageUrl.split(',');
+    if (parts.length != 2) return _placeholder();
+    try {
+      final bytes = base64Decode(parts[1]);
+      return Image.memory(
+        bytes,
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.cover,
+        errorBuilder: (_, __, ___) => _placeholder(),
+      );
+    } catch (_) {
+      return _placeholder();
+    }
+  }
+
+  Widget _buildNetworkImage() {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      width: width,
+      height: height,
+      fit: fit ?? BoxFit.cover,
+      placeholder: (_, __) => _placeholder(),
+      errorWidget: (_, __, ___) => _placeholder(),
+    );
+  }
+
+  Widget _placeholder() {
     return Container(
       width: width,
       height: height,

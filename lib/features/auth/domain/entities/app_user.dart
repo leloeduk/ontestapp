@@ -15,6 +15,7 @@ class AppUser extends Equatable {
     this.testerEmail,
     this.createdAt,
     this.isDeveloper = false,
+    this.isAdmin = false,
   });
 
   final String uid;
@@ -30,8 +31,7 @@ class AppUser extends Equatable {
   final String? testerEmail;
   final DateTime? createdAt;
   final bool isDeveloper;
-
-  bool get isAdmin => role == 'admin';
+  final bool isAdmin;
 
   static const AppUser empty = AppUser(uid: '', name: '', email: '');
 
@@ -49,6 +49,7 @@ class AppUser extends Equatable {
     String? plan,
     String? testerEmail,
     bool? isDeveloper,
+    bool? isAdmin,
   }) {
     return AppUser(
       uid: uid,
@@ -64,6 +65,7 @@ class AppUser extends Equatable {
       testerEmail: testerEmail ?? this.testerEmail,
       createdAt: createdAt,
       isDeveloper: isDeveloper ?? this.isDeveloper,
+      isAdmin: isAdmin ?? this.isAdmin,
     );
   }
 
@@ -82,5 +84,6 @@ class AppUser extends Equatable {
         testerEmail,
         createdAt,
         isDeveloper,
+        isAdmin,
       ];
 }

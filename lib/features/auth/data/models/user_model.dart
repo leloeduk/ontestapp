@@ -17,6 +17,7 @@ class UserModel extends AppUser {
     super.testerEmail,
     super.createdAt,
     super.isDeveloper,
+    super.isAdmin,
   });
 
   factory UserModel.fromMap(String uid, Map<String, dynamic> map) {
@@ -34,6 +35,7 @@ class UserModel extends AppUser {
       plan: (map['plan'] ?? 'free') as String,
       testerEmail: map['testerEmail'] as String?,
       isDeveloper: (map['isDeveloper'] ?? false) as bool,
+      isAdmin: (map['isAdmin'] ?? false) as bool,
       createdAt: createdAt is Timestamp ? createdAt.toDate() : null,
     );
   }
@@ -55,6 +57,7 @@ class UserModel extends AppUser {
       'plan': plan,
       'testerEmail': testerEmail,
       'isDeveloper': isDeveloper,
+      'isAdmin': isAdmin,
       'createdAt':
           createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
     };

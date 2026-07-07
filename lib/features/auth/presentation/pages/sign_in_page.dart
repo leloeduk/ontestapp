@@ -115,18 +115,21 @@ class _SignInPageState extends State<SignInPage> {
                                 TextSpan(
                                   style: const TextStyle(fontSize: 14),
                                   children: [
-                                    const TextSpan(text: "J'accepte les "),
+                                    const TextSpan(
+                                      text:
+                                          "J'accepte les conditions d'utilisation ",
+                                    ),
                                     WidgetSpan(
                                       alignment: PlaceholderAlignment.middle,
                                       child: GestureDetector(
                                         onTap: () =>
                                             context.push('/terms-read'),
                                         child: Text(
-                                          'conditions d\'utilisation',
+                                          "lire les conditions d'utilisation",
                                           style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
                                             decoration:
                                                 TextDecoration.underline,
                                           ),
@@ -157,7 +160,9 @@ class _SignInPageState extends State<SignInPage> {
                               text: 'Continuer avec Google',
                               textStyle: Theme.of(context).textTheme.labelLarge
                                   ?.copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                               onPressed: _termsAccepted ? _googleSignIn : () {},
                             ),

@@ -54,17 +54,18 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
                 ),
                 const SizedBox(height: 24),
                 ..._buildIndicator(colors),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 _buildStepContent(context, colors),
-                const SizedBox(height: 16),
-                Row(
+                const SizedBox(height: 20),
+                Wrap(
                   children: [
                     if (_currentStep > 0)
                       OutlinedButton(
                         onPressed: () => setState(() => _currentStep--),
                         child: const Text('Précédent'),
                       ),
-                    if (_currentStep > 0) const SizedBox(width: 12),
+                    const SizedBox(height: 20),
+                    if (_currentStep > 0) const SizedBox(width: 20),
                     if (_currentStep < 2)
                       FilledButton(
                         onPressed: () => setState(() => _currentStep++),
@@ -105,8 +106,8 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
                 color: isCompleted
                     ? colors.primary
                     : isActive
-                        ? colors.primaryContainer
-                        : colors.surfaceContainerHighest,
+                    ? colors.primaryContainer
+                    : colors.surfaceContainerHighest,
               ),
               child: Center(
                 child: isCompleted
@@ -123,7 +124,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
                       ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Text(
               title,
               style: TextStyle(
@@ -149,7 +150,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
               "Ouvre l'application sur le Play Store pour accéder "
               'à la page officielle et sécurisée.',
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: _openStore,
               icon: const Icon(Icons.open_in_new),
@@ -170,7 +171,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
               "Reviens ici et donne ton avis sur l'application. "
               'Ton retour aide à améliorer l’application.',
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: () => context.push(
                 '/test/${widget.test.id}/review',

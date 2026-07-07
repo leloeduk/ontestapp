@@ -15,15 +15,19 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   List<ReviewModel>? _reviews;
-  bool _loading = true;
+  bool _loading = false;
+  DateTime? _lastLoad;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
   Future<void> _load() async {
+    if (_loading) return;
+    _loading = true;
+    _lastLoad = DateTime.now();
     final uid = context.read<AuthBloc>().state.user.uid;
     try {
       final reviews = await context.read<ReviewRepository>().getReviewsByUser(uid);
@@ -40,6 +44,10 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_reviews != null && !_loading &&
+        DateTime.now().difference(_lastLoad ?? DateTime(0)).inSeconds > 3) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    }
     if (_loading) return const Center(child: LoadingView());
 
     final reviews = _reviews ?? [];

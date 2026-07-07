@@ -35,12 +35,12 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_formKey.currentState!.validate()) {
       context.read<OnboardingService>().acceptTerms();
       context.read<AuthBloc>().add(
-            AuthSignUpRequested(
-              name: _nameController.text.trim(),
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        AuthSignUpRequested(
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -66,7 +66,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       ScaffoldMessenger.of(context)
                         ..hideCurrentSnackBar()
                         ..showSnackBar(
-                            SnackBar(content: Text(state.errorMessage!)));
+                          SnackBar(content: Text(state.errorMessage!)),
+                        );
                     }
                   },
                   builder: (context, state) {
@@ -81,8 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             Text(
                               'Créer un compte',
                               textAlign: TextAlign.center,
-                              style:
-                                  Theme.of(context).textTheme.headlineMedium,
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
                             const SizedBox(height: 8),
                             const Text(
@@ -121,18 +121,21 @@ class _SignUpPageState extends State<SignUpPage> {
                                 TextSpan(
                                   style: const TextStyle(fontSize: 14),
                                   children: [
-                                    const TextSpan(text: "J'accepte les "),
+                                    const TextSpan(
+                                      text:
+                                          "J'accepte les conditions d'utilisation ",
+                                    ),
                                     WidgetSpan(
                                       alignment: PlaceholderAlignment.middle,
                                       child: GestureDetector(
                                         onTap: () =>
                                             context.push('/terms-read'),
                                         child: Text(
-                                          'conditions d\'utilisation',
+                                          "lire les conditions d'utilisation",
                                           style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
                                             decoration:
                                                 TextDecoration.underline,
                                           ),

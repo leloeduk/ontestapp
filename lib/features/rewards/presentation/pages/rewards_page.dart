@@ -63,10 +63,15 @@ class _RewardsPageState extends State<RewardsPage> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      '${reviews.length} test${reviews.length > 1 ? 's' : ''} effectué${reviews.length > 1 ? 's' : ''}',
-                      style: TextStyle(color: colors.onPrimaryContainer),
-                    ),
+                    Builder(builder: (context) {
+                      final validated = reviews.where((r) => r.testValidated).length;
+                      final pending = reviews.length - validated;
+                      return Text(
+                        '$validated validé${validated > 1 ? 's' : ''}'
+                        '${pending > 0 ? ', $pending en attente' : ''}',
+                        style: TextStyle(color: colors.onPrimaryContainer),
+                      );
+                    }),
                   ],
                 ),
               ),

@@ -16,7 +16,7 @@ class OfflineBanner extends StatelessWidget {
           Icon(Icons.cloud_off, size: 16, color: colors.onError),
           const SizedBox(width: 8),
           Text(
-            'Hors ligne — les données seront synchronisées automatiquement',
+            'Hors ligne — les données seront synchronisées',
             style: TextStyle(color: colors.onError, fontSize: 12),
           ),
         ],

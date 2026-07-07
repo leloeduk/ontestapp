@@ -24,6 +24,39 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _index = 0;
+  int _refreshKey = 0;
+  String _lastLocation = '';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _lastLocation = _currentLocation();
+    GoRouter.of(context).routerDelegate.addListener(_onRouteChanged);
+  }
+
+  @override
+  void dispose() {
+    try {
+      GoRouter.of(context).routerDelegate.removeListener(_onRouteChanged);
+    } catch (_) {}
+    super.dispose();
+  }
+
+  String _currentLocation() {
+    return GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
+  }
+
+  void _onRouteChanged() {
+    try {
+      final loc = _currentLocation();
+      if (loc != _lastLocation) {
+        _lastLocation = loc;
+        if (loc == '/home') {
+          setState(() => _refreshKey++);
+        }
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {

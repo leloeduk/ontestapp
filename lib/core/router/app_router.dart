@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../features/about/presentation/pages/about_page.dart';
 import '../../features/auth/data/repositories/auth_repository.dart';
 import '../../features/auth/data/services/user_service.dart';
@@ -93,10 +91,7 @@ class AppRouter {
         GoRoute(path: '/splash', builder: (_, __) => const SplashPage()),
         GoRoute(path: '/sign-in', builder: (_, __) => const SignInPage()),
         GoRoute(path: '/sign-up', builder: (_, __) => const SignUpPage()),
-        GoRoute(
-          path: '/terms-read',
-          builder: (_, __) => const TermsReadPage(),
-        ),
+        GoRoute(path: '/terms-read', builder: (_, __) => const TermsReadPage()),
         GoRoute(
           path: '/onboarding',
           builder: (_, __) => const OnboardingPage(),
@@ -168,15 +163,20 @@ class AppRouter {
         ),
         GoRoute(
           path: '/test/:id/confirmation',
-          builder: (_, __) => const ConfirmationPage(),
+          builder: (context, state) {
+            final test = state.extra as TestApp?;
+            if (test == null) return const _MissingTest();
+            return ConfirmationPage(test: test);
+          },
         ),
         GoRoute(
           path: '/admin/validation',
           builder: (context, __) => BlocProvider(
             create: (ctx) => AdminValidationBloc(
-              reviewRepository: ctx.read<ReviewRepository>(),
-            ),
-            child: const AdminValidationPage(),
+            reviewRepository: ctx.read<ReviewRepository>(),
+            userService: ctx.read<UserService>(),
+          ),
+          child: const AdminValidationPage(),
           ),
         ),
         // passe l'ID de l'utilisateur actuel à la page RewardsPage
@@ -210,16 +210,11 @@ class AppRouter {
             child: const EarnPage(),
           ),
         ),
-        GoRoute(
-          path: '/about',
-          builder: (_, __) => const AboutPage(),
-        ),
+        GoRoute(path: '/about', builder: (_, __) => const AboutPage()),
         GoRoute(
           path: '/feedback',
           builder: (context, __) => BlocProvider(
-            create: (ctx) => FeedbackBloc(
-              feedbackService: FeedbackService(),
-            ),
+            create: (ctx) => FeedbackBloc(feedbackService: FeedbackService()),
             child: const FeedbackPage(),
           ),
         ),
