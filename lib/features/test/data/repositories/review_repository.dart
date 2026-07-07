@@ -36,6 +36,7 @@ class ReviewRepository {
     required String screenshot1Path,
     required String screenshot2Path,
     required String appName,
+    String? playStoreUrl,
     int rewardPoints = 10,
   }) async {
     final already = await _reviewService.hasReviewed(userId, testId);
@@ -66,6 +67,7 @@ class ReviewRepository {
       testName: testName,
       screenshot1Url: screenshot1Url,
       screenshot2Url: screenshot2Url,
+      playStoreUrl: playStoreUrl,
       rewardPoints: rewardPoints,
     );
     await _reviewService.addReview(review);

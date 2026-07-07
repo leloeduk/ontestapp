@@ -16,6 +16,7 @@ class ReviewSubmitted extends ReviewEvent {
     required this.screenshot1Path,
     required this.screenshot2Path,
     required this.appName,
+    this.playStoreUrl,
     this.rewardPoints = 10,
   });
 
@@ -26,6 +27,7 @@ class ReviewSubmitted extends ReviewEvent {
   final String screenshot1Path;
   final String screenshot2Path;
   final String appName;
+  final String? playStoreUrl;
   final int rewardPoints;
 
   @override
@@ -37,6 +39,7 @@ class ReviewSubmitted extends ReviewEvent {
         screenshot1Path,
         screenshot2Path,
         appName,
+        playStoreUrl,
         rewardPoints,
       ];
 }

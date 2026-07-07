@@ -115,6 +115,7 @@ class _ReviewPageState extends State<ReviewPage> {
         screenshot1Path: _screenshot1Path!,
         screenshot2Path: _screenshot2Path!,
         appName: widget.test.title,
+        playStoreUrl: widget.test.playStoreUrl,
       ),
     );
   }

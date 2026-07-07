@@ -115,7 +115,20 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.add),
               label: const Text('Ajouter'),
             )
-          : null,
+          : FloatingActionButton.extended(
+              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    user.plan == 'free'
+                        ? 'Plan Gratuit : 50 pts requis pour ajouter un test'
+                        : '50 pts requis pour ajouter un test',
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.lock_outline),
+              label: const Text('Ajouter'),
+              backgroundColor: Colors.grey.shade400,
+            ),
     );
   }
 }

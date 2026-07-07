@@ -114,6 +114,7 @@ class AdminValidationBloc
     AdminValidateReview event,
     Emitter<AdminValidationState> emit,
   ) async {
+    if (state.status == AdminValidationStatus.validating) return;
     emit(state.copyWith(status: AdminValidationStatus.validating));
     try {
       await _reviewRepository.validateReview(
@@ -121,10 +122,20 @@ class AdminValidationBloc
         userId: event.userId,
         rewardPoints: event.rewardPoints,
       );
+      final userIds =
+          state.reviews.map((r) => r.userId).toSet().toList();
+      final users = await Future.wait(
+        userIds.map((id) => _userService.getUser(id)),
+      );
+      final userTestsCount = <String, int>{};
+      for (final u in users) {
+        if (u != null) userTestsCount[u.uid] = u.testsDone;
+      }
       final reviews = await _reviewRepository.getUnvalidatedReviews();
       emit(state.copyWith(
         status: AdminValidationStatus.loaded,
         reviews: reviews,
+        userTestsCount: userTestsCount,
       ));
     } catch (_) {
       emit(state.copyWith(

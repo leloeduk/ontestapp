@@ -23,4 +23,10 @@ class StorageService {
     await ref.putFile(File(filePath));
     return await ref.getDownloadURL();
   }
+
+  Future<void> deleteFile(String url) async {
+    try {
+      await _storage.refFromURL(url).delete();
+    } catch (_) {}
+  }
 }

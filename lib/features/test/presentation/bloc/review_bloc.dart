@@ -29,6 +29,7 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         screenshot1Path: event.screenshot1Path,
         screenshot2Path: event.screenshot2Path,
         appName: event.appName,
+        playStoreUrl: event.playStoreUrl,
         rewardPoints: event.rewardPoints,
       );
       emit(const ReviewState(status: ReviewStatus.success));

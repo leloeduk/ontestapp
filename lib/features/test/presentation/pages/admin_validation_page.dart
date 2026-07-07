@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
 import '../../../test/data/repositories/test_repository.dart';
+import '../../data/services/storage_service.dart';
 import '../../data/models/review_model.dart';
 import '../bloc/admin_validation_bloc.dart';
 
@@ -63,12 +64,41 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
     );
   }
 
-  Future<void> _deleteTest(String testId) async {
+  void _viewImage(String url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              child: AppImage(
+                imageUrl: url,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteTest(ReviewModel review) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Supprimer ce test ?'),
-        content: const Text('Cette action est irréversible.'),
+        content: const Text(
+          'Le test et ses images seront supprimés. '
+          'L\'utilisateur garde ses points déjà crédités.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -82,13 +112,13 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
       ),
     );
     if (confirmed == true && mounted) {
-      final testRepo = context.read<TestRepository>();
-      final validationBloc = context.read<AdminValidationBloc>();
-      await testRepo.deleteTest(testId);
+      final storageService = context.read<StorageService>();
+      await storageService.deleteFile(review.screenshot1Url);
+      await storageService.deleteFile(review.screenshot2Url);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Test supprimé')));
+        final testRepo = context.read<TestRepository>();
+        final validationBloc = context.read<AdminValidationBloc>();
+        await testRepo.deleteTest(review.testId);
         validationBloc.add(const AdminValidationRequested());
       }
     }
@@ -192,34 +222,26 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 4),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child:
-                                      review.screenshot1Url.startsWith('http')
-                                      ? AppImage(
-                                          imageUrl: review.screenshot1Url,
-                                          height: 150,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                          borderRadius: 8,
-                                        )
-                                      : Container(
-                                          height: 150,
-                                          color: Colors.grey.shade200,
-                                          child: const Center(
-                                            child: Text('Aucune capture'),
+                                GestureDetector(
+                                  onTap: () => _viewImage(review.screenshot1Url),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: review.screenshot1Url.startsWith('http')
+                                        ? AppImage(
+                                            imageUrl: review.screenshot1Url,
+                                            height: 150,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                            borderRadius: 8,
+                                          )
+                                        : Container(
+                                            height: 150,
+                                            color: Colors.grey.shade200,
+                                            child: const Center(
+                                              child: Text('Aucune capture'),
+                                            ),
                                           ),
-                                        ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  review.screenshot1Url,
-                                  style: TextStyle(
-                                    color: colors.primary,
-                                    fontSize: 10,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -234,34 +256,26 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 4),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child:
-                                      review.screenshot1Url.startsWith('http')
-                                      ? AppImage(
-                                          imageUrl: review.screenshot2Url,
-                                          height: 150,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                          borderRadius: 8,
-                                        )
-                                      : Container(
-                                          height: 150,
-                                          color: Colors.grey.shade200,
-                                          child: const Center(
-                                            child: Text('Aucune capture'),
+                                GestureDetector(
+                                  onTap: () => _viewImage(review.screenshot2Url),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: review.screenshot2Url.startsWith('http')
+                                        ? AppImage(
+                                            imageUrl: review.screenshot2Url,
+                                            height: 150,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                            borderRadius: 8,
+                                          )
+                                        : Container(
+                                            height: 150,
+                                            color: Colors.grey.shade200,
+                                            child: const Center(
+                                              child: Text('Aucune capture'),
+                                            ),
                                           ),
-                                        ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  review.screenshot2Url,
-                                  style: TextStyle(
-                                    color: colors.primary,
-                                    fontSize: 10,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -302,7 +316,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                         children: [
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () => _deleteTest(review.testId),
+                              onPressed: () => _deleteTest(review),
                               icon: const Icon(Icons.delete_outline, size: 18),
                               label: const Text('Supprimer'),
                               style: OutlinedButton.styleFrom(
