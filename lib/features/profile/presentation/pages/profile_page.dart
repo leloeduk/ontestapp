@@ -152,9 +152,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                InkWell(
-                  onTap: () => _showEditDialog(context, user),
-                  child: Icon(Icons.edit, size: 35, color: colors.primary),
+                IconButton(
+                  onPressed: () => _showEditDialog(context, user),
+                  icon: Icon(Icons.edit, size: 35, color: colors.primary),
                 ),
               ],
             ),
@@ -234,8 +234,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     (_reviews?.length ?? 0) >= 2) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content:
-                          Text('Limite du plan gratuit atteinte (2 tests max)'),
+                      content: Text(
+                        'Limite du plan gratuit atteinte (2 tests max)',
+                      ),
                     ),
                   );
                 } else {

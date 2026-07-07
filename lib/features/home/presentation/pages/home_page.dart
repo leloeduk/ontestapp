@@ -76,46 +76,10 @@ class _HomePageState extends State<HomePage> {
     } catch (_) {}
   }
 
-  void _onAddTest(BuildContext context) {
-    final user = context.read<AuthBloc>().state.user;
-    if (user.points < 50) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('50 points requis pour ajouter un test')),
-      );
-      return;
-    }
-    if (user.plan == 'free' && _userTestCount >= 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Limite du plan gratuit atteinte (2 tests max)'),
-        ),
-      );
-      return;
-    }
-    context.push('/add-test');
-  }
-
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthBloc>().state.user;
-    final canAdd =
-        user.points >= 50 && (user.plan != 'free' || _userTestCount < 2);
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('OntestApp'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              canAdd ? Icons.add_circle_outline : Icons.add_circle,
-              color: canAdd ? null : Colors.grey,
-              size: 35,
-            ),
-            tooltip: 'Ajouter un test',
-            onPressed: () => _onAddTest(context),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('OntestApp')),
       drawer: const AppDrawer(),
       body: Column(
         children: [

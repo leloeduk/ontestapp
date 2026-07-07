@@ -144,3 +144,67 @@ Les développeurs obtiennent de vrais utilisateurs qui installent, utilisent et 
 Les testeurs découvrent de nouvelles applications, contribuent à leur amélioration et gagnent des points en échange de leurs retours.
 
 L'application agit donc comme un intermédiaire entre les créateurs d'applications et une communauté de testeurs, en transformant le processus de test en une expérience ludique grâce à un système de récompenses.
+
+---
+
+## Déploiement / Mise en production
+
+### Firebase
+
+1. Créer un projet Firebase (console.firebase.google.com)
+2. Activer **Authentication** (Email/Mot de passe + Google)
+3. Activer **Cloud Firestore** (règle : `allow read, write: if request.auth != null`)
+4. Activer **Firebase Storage** (règle : `allow read, write: if request.auth != null`)
+5. Télécharger `google-services.json` (Android) et `GoogleService-Info.plist` (iOS) → placer dans les dossiers respectifs
+
+### Firebase CLI
+
+```bash
+dart pub global activate flutterfire_cli
+flutterfire configure --project=nom-du-projet
+```
+
+### Build Android (APK / App Bundle)
+
+```bash
+# APK
+flutter build apk --release
+
+# App Bundle (recommandé Play Store)
+flutter build appbundle --release
+```
+
+Le fichier généré se trouve dans `build/app/outputs/`.
+
+### Build iOS (Archive)
+
+```bash
+flutter build ios --release
+```
+
+Puis ouvrir `ios/Runner.xcworkspace` dans Xcode, sélectionner `Product > Archive` et soumettre via le Organizer.
+
+### Google Play Console
+
+1. Créer un compte développeur Google Play (25 $ unique)
+2. Préparer la fiche Play Store (icône, captures d'écran, description)
+3. Lancer un **Closed Testing** (test fermé) avec un groupe Google
+4. Promouvoir en **Open Testing** puis publication officielle
+
+---
+
+## Publicité (AdMob) — À implémenter
+
+Pour intégrer des publicités et monétiser :
+
+1. Créer un compte **AdMob** (https://admob.google.com)
+2. Ajouter votre application dans AdMob
+3. Créer des unités publicitaires (Banner, Interstitial, Rewarded)
+4. Ajouter la dépendance dans `pubspec.yaml` :
+   ```yaml
+   google_mobile_ads: ^5.0.0
+   ```
+5. Configurer les IDs de test dans le code
+6. Remplacer les IDs de test par les IDs réels avant la publication
+
+**Recommandation pour ce MVP :** Commencer par une **bannière en bas de l'écran d'accueil** et une **interstitielle après la soumission d'un test**.
