@@ -39,6 +39,13 @@ import '../../features/test/presentation/pages/review_page.dart';
 import '../../features/test/presentation/pages/test_detail_page.dart';
 import '../../features/test/presentation/pages/test_in_progress_page.dart';
 
+// Admin web
+import '../../admin/bloc/admin_bloc.dart';
+import '../../admin/pages/admin_shell_page.dart';
+import '../../admin/pages/admin_dashboard_page.dart';
+import '../../admin/pages/admin_reviews_page.dart';
+import '../../admin/pages/admin_users_page.dart';
+
 /// Configuration de la navigation (GoRouter).
 class AppRouter {
   AppRouter._();
@@ -217,6 +224,33 @@ class AppRouter {
             create: (ctx) => FeedbackBloc(feedbackService: FeedbackService()),
             child: const FeedbackPage(),
           ),
+        ),
+        // --- Admin Web ---
+        ShellRoute(
+          builder: (context, state, child) => AdminShellPage(child: child),
+          routes: [
+            GoRoute(
+              path: '/admin',
+              builder: (context, __) => BlocProvider(
+                create: (ctx) => AdminBloc(),
+                child: const AdminDashboardPage(),
+              ),
+            ),
+            GoRoute(
+              path: '/admin/reviews',
+              builder: (context, __) => BlocProvider(
+                create: (ctx) => AdminBloc(),
+                child: const AdminReviewsPage(),
+              ),
+            ),
+            GoRoute(
+              path: '/admin/users',
+              builder: (context, __) => BlocProvider(
+                create: (ctx) => AdminBloc(),
+                child: const AdminUsersPage(),
+              ),
+            ),
+          ],
         ),
       ],
     );
