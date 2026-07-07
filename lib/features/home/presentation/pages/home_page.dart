@@ -9,7 +9,6 @@ import '../../../../core/widgets/banner_ad_widget.dart';
 import '../../../../core/widgets/offline_banner.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
-import '../../../test/data/repositories/test_repository.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/points_header.dart';
 import '../widgets/test_card.dart';
@@ -25,28 +24,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _index = 0;
-  int _refreshKey = 0;
   String _lastLocation = '';
-  int _userTestCount = 0;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _lastLocation = _currentLocation();
     GoRouter.of(context).routerDelegate.addListener(_onRouteChanged);
-    _loadUserTestCount();
-  }
-
-  Future<void> _loadUserTestCount() async {
-    try {
-      final uid = context.read<AuthBloc>().state.user.uid;
-      final all = await context.read<TestRepository>().getTests();
-      if (mounted) {
-        setState(
-          () => _userTestCount = all.where((t) => t.userId == uid).length,
-        );
-      }
-    } catch (_) {}
   }
 
   @override
@@ -68,10 +52,6 @@ class _HomePageState extends State<HomePage> {
       final loc = _currentLocation();
       if (loc != _lastLocation) {
         _lastLocation = loc;
-        if (loc == '/home') {
-          setState(() => _refreshKey++);
-        }
-        _loadUserTestCount();
       }
     } catch (_) {}
   }
