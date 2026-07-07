@@ -9,6 +9,7 @@ import '../../../../core/widgets/banner_ad_widget.dart';
 import '../../../../core/widgets/offline_banner.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
+import '../../../test/data/repositories/test_repository.dart';
 import '../bloc/home_bloc.dart';
 import '../widgets/points_header.dart';
 import '../widgets/test_card.dart';
@@ -26,12 +27,24 @@ class _HomePageState extends State<HomePage> {
   int _index = 0;
   int _refreshKey = 0;
   String _lastLocation = '';
+  int _userTestCount = 0;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _lastLocation = _currentLocation();
     GoRouter.of(context).routerDelegate.addListener(_onRouteChanged);
+    _loadUserTestCount();
+  }
+
+  Future<void> _loadUserTestCount() async {
+    try {
+      final uid = context.read<AuthBloc>().state.user.uid;
+      final all = await context.read<TestRepository>().getTests();
+      if (mounted) {
+        setState(() => _userTestCount = all.where((t) => t.userId == uid).length);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -54,17 +67,50 @@ class _HomePageState extends State<HomePage> {
         if (loc == '/home') {
           setState(() => _refreshKey++);
         }
+        _loadUserTestCount();
       }
     } catch (_) {}
+  }
+
+  void _onAddTest(BuildContext context) {
+    final user = context.read<AuthBloc>().state.user;
+    if (user.points < 50) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('50 points requis pour ajouter un test')),
+      );
+      return;
+    }
+    if (user.plan == 'free' && _userTestCount >= 2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Limite du plan gratuit atteinte (2 tests max)'),
+        ),
+      );
+      return;
+    }
+    context.push('/add-test');
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthBloc>().state.user;
-    final canAdd = user.points >= 50;
+    final canAdd = user.points >= 50 &&
+        (user.plan != 'free' || _userTestCount < 2);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('OntestApp')),
+      appBar: AppBar(
+        title: const Text('OntestApp'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              canAdd ? Icons.add_circle_outline : Icons.add_circle,
+              color: canAdd ? null : Colors.grey,
+            ),
+            tooltip: 'Ajouter un test',
+            onPressed: () => _onAddTest(context),
+          ),
+        ],
+      ),
       drawer: const AppDrawer(),
       body: Column(
         children: [
@@ -109,26 +155,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: canAdd
-          ? FloatingActionButton.extended(
-              onPressed: () => context.push('/add-test'),
-              icon: const Icon(Icons.add),
-              label: const Text('Ajouter'),
-            )
-          : FloatingActionButton.extended(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    user.plan == 'free'
-                        ? 'Plan Gratuit : 50 pts requis pour ajouter un test'
-                        : '50 pts requis pour ajouter un test',
-                  ),
-                ),
-              ),
-              icon: const Icon(Icons.lock_outline),
-              label: const Text('Ajouter'),
-              backgroundColor: Colors.grey.shade400,
-            ),
     );
   }
 }

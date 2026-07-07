@@ -282,37 +282,18 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                           ),
                         ],
                       ),
-                      if (review.playStoreUrl != null) ...[
-                        const SizedBox(height: 8),
-                        InkWell(
-                          onTap: () => _openPlayStore(review.playStoreUrl!),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.open_in_new,
-                                size: 14,
-                                color: colors.primary,
-                              ),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  review.playStoreUrl!,
-                                  style: TextStyle(
-                                    color: colors.primary,
-                                    fontSize: 12,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                      const SizedBox(height: 12),
+                      if (review.playStoreUrl != null)
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () => _openPlayStore(review.playStoreUrl!),
+                            icon: const Icon(Icons.open_in_new, size: 18),
+                            label: const Text('Voir sur le Play Store'),
                           ),
                         ),
-                      ],
                       const SizedBox(height: 12),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Expanded(
                             child: OutlinedButton.icon(
@@ -324,10 +305,10 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: AppButton(
-                              label: 'Valider(${review.rewardPoints}pts)',
+                              label: 'Valider (+${review.rewardPoints} pts)',
                               isLoading:
                                   state.status ==
                                   AdminValidationStatus.validating,

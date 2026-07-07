@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../test/data/repositories/review_repository.dart';
@@ -127,16 +128,12 @@ class _MyTestsPageState extends State<MyTestsPage> {
               (test) => Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      test.iconUrl,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.apps, size: 48),
-                    ),
+                  leading: AppImage(
+                    imageUrl: test.iconUrl,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    borderRadius: 8,
                   ),
                   title: Text(
                     test.title,

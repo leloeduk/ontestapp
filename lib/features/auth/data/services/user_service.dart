@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../models/user_model.dart';
@@ -73,5 +76,16 @@ class UserService {
       'points': FieldValue.increment(points),
       'testsDone': FieldValue.increment(1),
     });
+  }
+
+  Future<String> uploadUserImage({
+    required String uid,
+    required String filePath,
+  }) async {
+    final ref = FirebaseStorage.instance.ref('users/$uid/profile.jpg');
+    await ref.putFile(File(filePath));
+    final url = await ref.getDownloadURL();
+    await _users.doc(uid).update({'photoUrl': url});
+    return url;
   }
 }

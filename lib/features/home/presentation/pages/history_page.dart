@@ -74,7 +74,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 size: 28,
               ),
               title: Text(
-                review.testName ?? 'Test #${review.testId.length > 8 ? review.testId.substring(0, 8) : review.testId}',
+                review.testName ?? 'Test',
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

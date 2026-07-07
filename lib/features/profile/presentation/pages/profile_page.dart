@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/widgets/app_status_widgets.dart';
+import '../../../auth/data/services/user_service.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../test/data/models/review_model.dart';
@@ -216,13 +218,39 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () => context.push('/rewards'),
               icon: const Icon(Icons.history_rounded),
               label: const Text('Voir mon historique complet'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Changer de plan'),
+                  content: const Text(
+                    'Pas disponible pour l\'instant. '
+                    'Bientôt disponible.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              ),
+              icon: const Icon(Icons.star_rounded),
+              label: const Text('Changer de plan'),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),
               ),
@@ -269,7 +297,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _showEditDialog(BuildContext context, AppUser user) async {
     final nameCtl = TextEditingController(text: user.name);
-    final photoCtl = TextEditingController(text: user.photoUrl ?? '');
+    String? newPhotoUrl = user.photoUrl;
+
     final submitted = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -282,10 +311,32 @@ class _ProfilePageState extends State<ProfilePage> {
               label: 'Nom',
             ),
             const SizedBox(height: 12),
-            AppTextField(
-              controller: photoCtl,
-              label: 'URL de la photo',
-              keyboardType: TextInputType.url,
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final picker = ImagePicker();
+                  final picked = await picker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 80,
+                  );
+                  if (picked != null) {
+                    final userService = ctx.read<UserService>();
+                    final uid = ctx.read<AuthBloc>().state.user.uid;
+                    newPhotoUrl = await userService.uploadUserImage(
+                      uid: uid,
+                      filePath: picked.path,
+                    );
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  }
+                },
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                label: Text(
+                  newPhotoUrl != null
+                      ? 'Changer la photo'
+                      : 'Ajouter une photo',
+                ),
+              ),
             ),
           ],
         ),
@@ -304,7 +355,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (submitted == true && context.mounted) {
       context.read<AuthBloc>().add(AuthUpdateProfileRequested(
             name: nameCtl.text.trim(),
-            photoUrl: photoCtl.text.trim().isEmpty ? null : photoCtl.text.trim(),
+            photoUrl: newPhotoUrl,
           ));
     }
   }
@@ -375,7 +426,7 @@ class _SubmissionTile extends StatelessWidget {
           size: 28,
         ),
         title: Text(
-          'Test #${review.testId.length > 8 ? review.testId.substring(0, 8) : review.testId}',
+          review.testName ?? 'Test',
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
