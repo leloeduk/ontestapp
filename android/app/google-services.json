@@ -12,7 +12,28 @@
           "package_name": "com.leloeduk.ontestapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1008600573757-1dlqg4parr63si3ee8i3rud0m3dqaosq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.leloeduk.ontestapp",
+            "certificate_hash": "1e99564b0f960ddf4214b78de40d3be1461dab74"
+          }
+        },
+        {
+          "client_id": "1008600573757-2beit4jhmoklnfkutc1en51dak3e12cu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.leloeduk.ontestapp",
+            "certificate_hash": "59b328d707424b8be372fd516104f1313b4d879f"
+          }
+        },
+        {
+          "client_id": "1008600573757-0f7lsrr5i90aflnitpsrovhqjfbhmc7h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDOyh_08iibeoP-RJ-QjG141fZfNcz34IY"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1008600573757-0f7lsrr5i90aflnitpsrovhqjfbhmc7h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1008600573757-siedqoi6sck76270fokeiuebj24cu1tq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.leloeduk.ontestapp"
+              }
+            }
+          ]
         }
       }
     }
