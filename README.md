@@ -71,6 +71,7 @@ L'écran rappelle également qu'il faudra revenir dans OnTestApp une fois le tes
 Une fois le test effectué, l'utilisateur revient dans OnTestApp.
 
 L'application l'invite à :
+
 1. Ouvrir directement Google Play pour laisser une note et un commentaire sur l'application
 2. Prendre une capture d'écran de l'application installée (preuve d'installation)
 3. Prendre une capture d'écran de son avis publié sur Google Play (preuve du commentaire)
@@ -208,3 +209,5 @@ Pour intégrer des publicités et monétiser :
 6. Remplacer les IDs de test par les IDs réels avant la publication
 
 **Recommandation pour ce MVP :** Commencer par une **bannière en bas de l'écran d'accueil** et une **interstitielle après la soumission d'un test**.
+
+& "C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -list -v -keystore android/app/upload-keystore.jks -alias upload
