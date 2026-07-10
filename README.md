@@ -211,3 +211,95 @@ Pour intégrer des publicités et monétiser :
 **Recommandation pour ce MVP :** Commencer par une **bannière en bas de l'écran d'accueil** et une **interstitielle après la soumission d'un test**.
 
 & "C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -list -v -keystore android/app/upload-keystore.jks -alias upload
+
+
+_____________________________________________________________________________________________________________________________
+
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+class NotificationService {
+  NotificationService._();
+
+  static final NotificationService instance = NotificationService._();
+
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+
+  final FlutterLocalNotificationsPlugin _local =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> initialize() async {
+    await _requestPermission();
+
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const settings = InitializationSettings(
+      android: android,
+    );
+
+    await _local.initialize(settings);
+
+    FirebaseMessaging.onMessage.listen(_showNotification);
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print("Notification ouverte");
+    });
+
+    final token = await getToken();
+    print("FCM TOKEN : $token");
+  }
+
+  Future<void> _requestPermission() async {
+    await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
+
+  Future<String?> getToken() async {
+    return await _messaging.getToken();
+  }
+
+  Future<void> _showNotification(RemoteMessage message) async {
+    await _local.show(
+      message.hashCode,
+      message.notification?.title,
+      message.notification?.body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'appointment_channel',
+          'Appointment Notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> firebaseMessagingBackgroundHandler(
+    RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
+
+
+______________________________________________________   main _________________________________________________________________
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseMessaging.onBackgroundMessage(
+      firebaseMessagingBackgroundHandler);
+
+  await NotificationService.instance.initialize();
+
+  runApp(const MyApp());
+}
+
