@@ -303,3 +303,32 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+____________________________________________________________________________________________
+
+Future<void> showAppointmentConfirmed({
+  required String doctorName,
+  required String date,
+  required String time,
+}) async {
+  await flutterLocalNotificationsPlugin.show(
+    1,
+    " Rendez-vous confirmé",
+    "Votre rendez-vous avec le Dr $doctorName a été confirmé pour le $date à $time.",
+    const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'appointment_channel',
+        'Appointment Notifications',
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
+    ),
+  );
+}
+
+------------------------------------------appel ------------------------------
+
+await showAppointmentConfirmed(
+  doctorName: "Jean Dupont",
+  date: "15 juillet 2026",
+  time: "10h30",
+);
