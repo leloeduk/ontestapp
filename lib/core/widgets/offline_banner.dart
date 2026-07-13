@@ -8,18 +8,33 @@ class OfflineBanner extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       color: colors.error,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.cloud_off, size: 16, color: colors.onError),
-          const SizedBox(width: 8),
-          Text(
-            'Hors ligne — les données seront synchronisées',
-            style: TextStyle(color: colors.onError, fontSize: 12),
-          ),
-        ],
+      child: SafeArea(
+        bottom: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.wifi_off_rounded, size: 16, color: colors.onError),
+            const SizedBox(width: 8),
+            Text(
+              'Hors ligne',
+              style: TextStyle(
+                color: colors.onError,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '— les données seront synchronisées',
+              style: TextStyle(
+                color: colors.onError.withValues(alpha: 0.8),
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

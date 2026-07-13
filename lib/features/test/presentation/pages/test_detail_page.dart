@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../../../core/services/ad_service.dart';
+import '../../../../core/services/connectivity_cubit.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
@@ -32,11 +31,13 @@ class _TestDetailPageState extends State<TestDetailPage> {
     super.dispose();
   }
 
+  bool get _isOffline =>
+      context.read<ConnectivityCubit>().state == false;
+
   Future<void> _startTest(TestApp test) async {
     setState(() => _isAdLoading = true);
 
-    final shouldShowAd = Random().nextBool();
-    if (shouldShowAd) {
+    if (!_isOffline) {
       final ad = await AdService.loadInterstitialAd();
       if (ad != null && mounted) {
         ad.fullScreenContentCallback = FullScreenContentCallback(
@@ -173,167 +174,148 @@ class _TestDetailPageState extends State<TestDetailPage> {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             AppImage(
                               imageUrl: test.iconUrl,
-                              width: 96,
-                              height: 96,
+                              width: 88,
+                              height: 88,
                               borderRadius: 20,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  test.title,
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    test.title,
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                // categories de l'application
-                                Text(
-                                  test.category,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[600],
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colors.primary.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      test.category,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: colors.primary,
+                                      ),
+                                    ),
                                   ),
-                                ),
-
-                                const SizedBox(height: 10),
-                                Center(
-                                  child: Container(
+                                  const SizedBox(height: 8),
+                                  Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 14,
-                                      vertical: 8,
+                                      vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
                                       color: colors.primaryContainer,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: Text(
-                                      '+${test.points} points',
-                                      style: TextStyle(
-                                        color: colors.onPrimaryContainer,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.emoji_events_rounded,
+                                          size: 16,
+                                          color: colors.onPrimaryContainer,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '+${test.points} points',
+                                          style: TextStyle(
+                                            color: colors.onPrimaryContainer,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
-
-                        const SizedBox(height: 24),
-                        Text(
-                          'Description',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
+                        const SizedBox(height: 28),
+                        _SectionHeader(title: 'Description'),
                         const SizedBox(height: 8),
-                        Text(test.description),
-                        if (test.steps.isNotEmpty) ...[
-                          const SizedBox(height: 24),
-                          Text(
-                            'Étapes à suivre',
-                            style: Theme.of(context).textTheme.titleMedium,
+                        Text(
+                          test.description,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey.shade700,
+                            height: 1.5,
                           ),
+                        ),
+                        if (test.steps.isNotEmpty) ...[
+                          const SizedBox(height: 28),
+                          _SectionHeader(title: 'Étapes à suivre'),
                           const SizedBox(height: 12),
                           for (int i = 0; i < test.steps.length; i++)
                             StepItem(number: i + 1, text: test.steps[i]),
                         ],
-                        const SizedBox(height: 24),
-                        Text(
-                          'Ce que vous devez faire',
-                          style: Theme.of(context).textTheme.titleMedium,
+                        const SizedBox(height: 28),
+                        _SectionHeader(title: 'Ce que vous devez faire'),
+                        const SizedBox(height: 12),
+                        _ChecklistItem(
+                          icon: Icons.play_circle_rounded,
+                          text: 'Suivre une vidéo pour gagner 5 points',
                         ),
-                        const SizedBox(height: 8),
-                        // un ckecklist des conditions de validation du test
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                                Text('Suivre une vidéo pour gagner 5 points'),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                                Text('Télécharger et installer l\'application'),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                                Text('Donner mon avis sur l\'application'),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                                Text("Une capture d'écran de l'app installer "),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                                Text("Une capture d'écran de mon avis"),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  "Les deux captures validées et \n je gagne 10 points",
-                                ),
-                              ],
-                            ),
-                          ],
+                        _ChecklistItem(
+                          icon: Icons.download_rounded,
+                          text: "Télécharger et installer l'application",
                         ),
+                        _ChecklistItem(
+                          icon: Icons.rate_review_rounded,
+                          text: "Donner mon avis sur l'application",
+                        ),
+                        _ChecklistItem(
+                          icon: Icons.screenshot_rounded,
+                          text: "Une capture d'écran de l'app installée",
+                        ),
+                        _ChecklistItem(
+                          icon: Icons.screenshot_rounded,
+                          text: "Une capture d'écran de mon avis",
+                        ),
+                        _ChecklistItem(
+                          icon: Icons.verified_rounded,
+                          text: 'Les deux captures validées = 10 points',
+                        ),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   ),
                 ),
-                  Padding(
-                  padding: const EdgeInsets.all(24),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
+                  ),
                   child: AppButton(
                     label: 'Tester maintenant',
                     icon: Icons.play_arrow_rounded,
@@ -345,6 +327,61 @@ class _TestDetailPageState extends State<TestDetailPage> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 17,
+        fontWeight: FontWeight.w700,
+        color: Colors.black87,
+      ),
+    );
+  }
+}
+
+class _ChecklistItem extends StatelessWidget {
+  const _ChecklistItem({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 18, color: Colors.green.shade700),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade700,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

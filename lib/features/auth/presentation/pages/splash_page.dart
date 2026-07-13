@@ -9,6 +9,7 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       body: Column(
         children: [
@@ -28,8 +29,15 @@ class SplashPage extends StatelessWidget {
                     width: 210,
                     height: 180,
                   ),
-                  const SizedBox(height: 30),
-                  const CircularProgressIndicator(color: Colors.white),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: colors.primary,
+                    ),
+                  ),
                 ],
               ),
             ),

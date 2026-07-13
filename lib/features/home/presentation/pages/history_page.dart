@@ -48,13 +48,14 @@ class _HistoryPageState extends State<HistoryPage> {
         DateTime.now().difference(_lastLoad ?? DateTime(0)).inSeconds > 3) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _load());
     }
-    if (_loading) return const Center(child: LoadingView());
+    if (_loading && _reviews == null) return const LoadingView();
 
     final reviews = _reviews ?? [];
     if (reviews.isEmpty) {
-      return const Center(child: EmptyView(message: 'Aucun historique'));
+      return const EmptyView(message: 'Aucun historique');
     }
 
+    final colors = Theme.of(context).colorScheme;
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView.separated(
@@ -63,15 +64,25 @@ class _HistoryPageState extends State<HistoryPage> {
         separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemBuilder: (context, i) {
           final review = reviews[i];
-          final colors = Theme.of(context).colorScheme;
           return Card(
+            margin: EdgeInsets.zero,
             child: ListTile(
-              leading: Icon(
-                review.testValidated
-                    ? Icons.check_circle_rounded
-                    : Icons.hourglass_empty_rounded,
-                color: review.testValidated ? Colors.green : Colors.orange,
-                size: 28,
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: review.testValidated
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : Colors.orange.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  review.testValidated
+                      ? Icons.check_circle_rounded
+                      : Icons.hourglass_empty_rounded,
+                  color: review.testValidated ? Colors.green : Colors.orange,
+                  size: 22,
+                ),
               ),
               title: Text(
                 review.testName ?? 'Test',

@@ -27,11 +27,6 @@ class _ReviewPageState extends State<ReviewPage> {
   String? _screenshot1Path;
   String? _screenshot2Path;
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future<void> _showInterstitialThenGoHome() async {
     final ad = await AdService.loadInterstitialAd();
     if (ad != null && mounted) {
@@ -122,6 +117,7 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Donner mon avis')),
       body: BlocConsumer<ReviewBloc, ReviewState>(
@@ -141,37 +137,85 @@ class _ReviewPageState extends State<ReviewPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: colors.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.rate_review_rounded,
+                      size: 32,
+                      color: colors.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   Text(
                     'Termine les étapes pour gagner tes points',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 32),
-                  ..._buildIndicator(),
-                  const SizedBox(height: 16),
-                  _buildStepContent(),
-                  const SizedBox(height: 16),
-                  Wrap(
+                  _StepIndicator(
+                    currentStep: _currentStep,
+                    steps: const [
+                      "Laisser un avis Google Play",
+                      "Capture d'écran 1 — Installation",
+                      "Capture d'écran 2 — Avis",
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildStepContent(colors),
+                  const SizedBox(height: 20),
+                  Row(
                     children: [
                       if (_currentStep > 0)
-                        OutlinedButton(
-                          onPressed: () => setState(() => _currentStep--),
-                          child: const Text('Précédent'),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => setState(() => _currentStep--),
+                            child: const Text('Précédent'),
+                          ),
                         ),
                       if (_currentStep > 0) const SizedBox(width: 12),
                       if (_currentStep < 2)
-                        FilledButton(
-                          onPressed: () => setState(() => _currentStep++),
-                          child: const Text('Suivant'),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () => setState(() => _currentStep++),
+                            child: const Text('Suivant'),
+                          ),
                         ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Les points seront crédités après vérification '
-                    'manuelle de tes captures.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline_rounded,
+                          size: 18,
+                          color: Colors.amber.shade700,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Les points seront crédités après vérification '
+                            'manuelle de tes captures.',
+                            style: TextStyle(
+                              color: Colors.amber.shade800,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   AppButton(
@@ -188,80 +232,26 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  List<Widget> _buildIndicator() {
-    const titles = [
-      "Laisser un avis Google Play",
-      "Capture d'écran 1 — Installation",
-      "Capture d'écran 2 — Avis Google Play",
-    ];
-    final colors = Theme.of(context).colorScheme;
-    return titles.asMap().entries.map((entry) {
-      final i = entry.key;
-      final title = entry.value;
-      final isActive = i == _currentStep;
-      final isCompleted = i < _currentStep;
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted
-                    ? colors.primary
-                    : isActive
-                    ? colors.primaryContainer
-                    : colors.surfaceContainerHighest,
-              ),
-              child: Center(
-                child: isCompleted
-                    ? Icon(Icons.check, size: 16, color: colors.onPrimary)
-                    : Text(
-                        '${i + 1}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: isActive
-                              ? colors.onPrimaryContainer
-                              : colors.onSurfaceVariant,
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                color: isActive || isCompleted
-                    ? colors.onSurface
-                    : colors.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      );
-    }).toList();
-  }
-
-  Widget _buildStepContent() {
+  Widget _buildStepContent(ColorScheme colors) {
     switch (_currentStep) {
       case 0:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               "Ouvre le Play Store, note l'application "
               'et laisse un commentaire.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
-            const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: _openPlayStoreReview,
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Ouvrir Google Play'),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _openPlayStoreReview,
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Ouvrir Google Play'),
+              ),
             ),
           ],
         );
@@ -269,27 +259,32 @@ class _ReviewPageState extends State<ReviewPage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               "Prends une capture d'écran de l'application installée.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
             if (_screenshot1Path != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 child: Image.file(
                   File(_screenshot1Path!),
-                  height: 120,
+                  height: 140,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
             ],
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: _pickScreenshot1,
-              icon: const Icon(Icons.add_photo_alternate_outlined),
-              label: Text(
-                _screenshot1Path != null ? 'Modifier' : 'Sélectionner',
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _pickScreenshot1,
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                label: Text(
+                  _screenshot1Path != null ? 'Modifier' : 'Sélectionner',
+                ),
               ),
             ),
           ],
@@ -298,27 +293,32 @@ class _ReviewPageState extends State<ReviewPage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               "Capture ton avis (note + commentaire) sur Google Play.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
             if (_screenshot2Path != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 child: Image.file(
                   File(_screenshot2Path!),
-                  height: 120,
+                  height: 140,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
             ],
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: _pickScreenshot2,
-              icon: const Icon(Icons.add_photo_alternate_outlined),
-              label: Text(
-                _screenshot2Path != null ? 'Modifier' : 'Sélectionner',
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _pickScreenshot2,
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                label: Text(
+                  _screenshot2Path != null ? 'Modifier' : 'Sélectionner',
+                ),
               ),
             ),
           ],
@@ -326,5 +326,77 @@ class _ReviewPageState extends State<ReviewPage> {
       default:
         return const SizedBox.shrink();
     }
+  }
+}
+
+class _StepIndicator extends StatelessWidget {
+  const _StepIndicator({
+    required this.currentStep,
+    required this.steps,
+  });
+
+  final int currentStep;
+  final List<String> steps;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      children: steps.asMap().entries.map((entry) {
+        final i = entry.key;
+        final title = entry.value;
+        final isActive = i == currentStep;
+        final isCompleted = i < currentStep;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isCompleted
+                      ? colors.primary
+                      : isActive
+                      ? colors.primaryContainer
+                      : colors.surfaceContainerHighest,
+                  border: isActive && !isCompleted
+                      ? Border.all(color: colors.primary, width: 2)
+                      : null,
+                ),
+                child: Center(
+                  child: isCompleted
+                      ? Icon(Icons.check, size: 18, color: colors.onPrimary)
+                      : Text(
+                          '${i + 1}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: isActive
+                                ? colors.onPrimaryContainer
+                                : colors.onSurfaceVariant,
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                  fontSize: 15,
+                  color: isActive || isCompleted
+                      ? colors.onSurface
+                      : colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
   }
 }

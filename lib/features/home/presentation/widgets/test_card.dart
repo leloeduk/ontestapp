@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../../test/domain/entities/test_app.dart';
 
-/// Carte d'une application à tester.
 class TestCard extends StatelessWidget {
   const TestCard({super.key, required this.test, required this.onTap});
 
@@ -15,19 +14,20 @@ class TestCard extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Card(
       clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(14),
           child: Row(
             children: [
               AppImage(
                 imageUrl: test.iconUrl,
-                width: 56,
-                height: 56,
-                borderRadius: 12,
+                width: 60,
+                height: 60,
+                borderRadius: 14,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +37,10 @@ class TestCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     if (test.category.isNotEmpty)
@@ -56,25 +59,41 @@ class TestCard extends StatelessWidget {
                       test.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                        height: 1.3,
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  '+${test.points}',
-                  style: TextStyle(
-                    color: colors.onPrimaryContainer,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.emoji_events_rounded,
+                      size: 14,
+                      color: colors.onPrimaryContainer,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '+${test.points}',
+                      style: TextStyle(
+                        color: colors.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -46,6 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -79,15 +80,36 @@ class _SignUpPageState extends State<SignUpPage> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            Container(
+                              width: 72,
+                              height: 72,
+                              decoration: BoxDecoration(
+                                color: colors.primaryContainer,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.person_add_rounded,
+                                size: 36,
+                                color: colors.onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
                             Text(
                               'Créer un compte',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineMedium,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               'Rejoins la communauté et gagne des points.',
                               textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey.shade600,
+                              ),
                             ),
                             const SizedBox(height: 32),
                             AppTextField(
@@ -113,52 +135,43 @@ class _SignUpPageState extends State<SignUpPage> {
                               obscureText: true,
                               validator: Validators.password,
                             ),
+                            const SizedBox(height: 4),
                             CheckboxListTile(
                               value: _termsAccepted,
                               onChanged: (v) =>
                                   setState(() => _termsAccepted = v!),
-                              title: Text.rich(
-                                TextSpan(
-                                  style: const TextStyle(fontSize: 14),
-                                  children: [
-                                    const TextSpan(
-                                      text:
-                                          "J'accepte les conditions d'utilisation ",
-                                    ),
-                                    WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: GestureDetector(
-                                        onTap: () =>
-                                            context.push('/terms-read'),
-                                        child: Text(
-                                          "lire les conditions d'utilisation",
-                                          style: TextStyle(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              title: const Text(
+                                "J'accepte les conditions d'utilisation",
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              subtitle: GestureDetector(
+                                onTap: () => context.push('/terms-read'),
+                                child: Text(
+                                  "Lire les conditions d'utilisation",
+                                  style: TextStyle(
+                                    color: colors.primary,
+                                    decoration: TextDecoration.underline,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             AppButton(
                               label: "S'inscrire",
                               isLoading: state.submitting,
                               onPressed: _termsAccepted ? _submit : null,
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 32),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text('Déjà un compte ?'),
+                                Text(
+                                  'Déjà un compte ?',
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
                                 TextButton(
                                   onPressed: () => context.go('/sign-in'),
                                   child: const Text('Se connecter'),

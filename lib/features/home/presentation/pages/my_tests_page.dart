@@ -102,24 +102,28 @@ class _MyTestsPageState extends State<MyTestsPage> {
         children: [
           Row(
             children: [
-              _StatCard(
-                icon: Icons.phone_android_rounded,
-                label: 'Tests soumis',
-                value: '${tests.length}',
-                color: colors.primary,
+              Expanded(
+                child: _StatCard(
+                  icon: Icons.phone_android_rounded,
+                  label: 'Tests soumis',
+                  value: '${tests.length}',
+                  color: colors.primary,
+                ),
               ),
               const SizedBox(width: 12),
-              _StatCard(
-                icon: Icons.rate_review_rounded,
-                label: 'Avis donnés',
-                value: '$_reviewsCount',
-                color: Colors.green,
+              Expanded(
+                child: _StatCard(
+                  icon: Icons.rate_review_rounded,
+                  label: 'Avis donnés',
+                  value: '$_reviewsCount',
+                  color: Colors.green,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           _AddTestButton(userTestCount: tests.length),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           if (tests.isEmpty)
             const Padding(
               padding: EdgeInsets.only(top: 60),
@@ -141,8 +145,12 @@ class _MyTestsPageState extends State<MyTestsPage> {
                     test.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  subtitle: Text('${test.points} pts'),
+                  subtitle: Text(
+                    '${test.points} pts',
+                    style: TextStyle(color: colors.primary),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -228,28 +236,36 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(height: 6),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
-            ],
-          ),
+            ),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+          ],
         ),
       ),
     );

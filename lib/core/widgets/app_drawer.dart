@@ -17,66 +17,83 @@ class AppDrawer extends StatelessWidget {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              decoration: BoxDecoration(color: colors.primaryContainer),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [colors.primary, colors.tertiary],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
               accountName: Text(
                 user.name,
-                style: TextStyle(color: colors.onPrimaryContainer),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               accountEmail: Text(
                 user.email,
-                style: TextStyle(color: colors.onPrimaryContainer),
+                style: const TextStyle(color: Colors.white70),
               ),
               currentAccountPicture: CircleAvatar(
-                backgroundColor: colors.primary,
+                backgroundColor: Colors.white.withValues(alpha: 0.2),
                 child: Text(
                   user.name.isNotEmpty
                       ? user.name[0].toUpperCase()
                       : '?',
                   style: TextStyle(
-                    fontSize: 24,
-                    color: colors.onPrimary,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.home_rounded),
-              title: const Text('Accueil'),
+            _DrawerTile(
+              icon: Icons.home_rounded,
+              title: 'Accueil',
               onTap: () => _navigate(context, '/home'),
             ),
-            ListTile(
-              leading: const Icon(Icons.monetization_on_rounded),
-              title: const Text('Gagner des points'),
+            _DrawerTile(
+              icon: Icons.monetization_on_rounded,
+              title: 'Gagner des points',
               onTap: () => _navigate(context, '/earn'),
             ),
-            ListTile(
-              leading: const Icon(Icons.history_rounded),
-              title: const Text('Mon historique'),
+            _DrawerTile(
+              icon: Icons.history_rounded,
+              title: 'Mon historique',
               onTap: () => _navigate(context, '/rewards'),
             ),
             if (user.isAdmin)
-              ListTile(
-                leading: const Icon(Icons.verified_rounded),
-                title: const Text('Validation admin'),
+              _DrawerTile(
+                icon: Icons.verified_rounded,
+                title: 'Validation admin',
                 onTap: () => _navigate(context, '/admin/validation'),
               ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.info_outline_rounded),
-              title: const Text('À propos'),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(),
+            ),
+            _DrawerTile(
+              icon: Icons.info_outline_rounded,
+              title: 'À propos',
               onTap: () => _navigate(context, '/about'),
             ),
-            ListTile(
-              leading: const Icon(Icons.feedback_outlined),
-              title: const Text('Suggestion'),
+            _DrawerTile(
+              icon: Icons.feedback_outlined,
+              title: 'Suggestion',
               onTap: () => _navigate(context, '/feedback'),
             ),
             const Spacer(),
-            const Divider(),
-            ListTile(
-              leading: Icon(Icons.logout, color: colors.error),
-              title: Text('Se déconnecter',
-                  style: TextStyle(color: colors.error)),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(),
+            ),
+            _DrawerTile(
+              icon: Icons.logout,
+              title: 'Se déconnecter',
+              iconColor: colors.error,
+              textColor: colors.error,
               onTap: () {
                 Navigator.pop(context);
                 context.read<AuthBloc>().add(const AuthSignOutRequested());
@@ -92,5 +109,33 @@ class AppDrawer extends StatelessWidget {
   void _navigate(BuildContext context, String path) {
     Navigator.pop(context);
     context.push(path);
+  }
+}
+
+class _DrawerTile extends StatelessWidget {
+  const _DrawerTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.iconColor,
+    this.textColor,
+  });
+
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+  final Color? iconColor;
+  final Color? textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: iconColor),
+      title: Text(
+        title,
+        style: TextStyle(color: textColor),
+      ),
+      onTap: onTap,
+    );
   }
 }

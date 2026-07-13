@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -85,27 +84,48 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(
-                Icons.hourglass_empty_rounded,
-                size: 120,
-                color: colors.primary,
-              ).animate().scale(duration: 400.ms, curve: Curves.elasticOut),
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: colors.primaryContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.hourglass_empty_rounded,
+                  size: 60,
+                  color: colors.primary,
+                ),
+              ),
               const SizedBox(height: 24),
               Text(
                 'Soumission envoyée !',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
-              Text(
-                'Tes captures d\'écran sont en cours de vérification.\n'
-                'Les points seront crédités une fois validées.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade600),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  'Tes captures d\'écran sont en cours de vérification.\n'
+                  'Les points seront crédités une fois validées.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 15,
+                    height: 1.5,
+                  ),
+                ),
               ),
               const SizedBox(height: 40),
               AppButton(
-                label: 'Retour à l\'accueil',
+                label: "Retour à l'accueil",
                 onPressed: () => context.go('/home'),
               ),
             ],

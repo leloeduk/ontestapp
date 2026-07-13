@@ -81,15 +81,41 @@ class _SignInPageState extends State<SignInPage> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            const SizedBox(height: 24),
+                            Container(
+                              width: 72,
+                              height: 72,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.person_rounded,
+                                size: 36,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
                             Text(
                               'Bienvenue !',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineMedium,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
+                            Text(
                               'Connecte-toi pour continuer à tester des apps.',
                               textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 15,
+                              ),
                             ),
                             const SizedBox(height: 32),
                             AppTextField(
@@ -107,73 +133,83 @@ class _SignInPageState extends State<SignInPage> {
                               obscureText: true,
                               validator: Validators.password,
                             ),
+                            const SizedBox(height: 4),
                             CheckboxListTile(
                               value: _termsAccepted,
                               onChanged: (v) =>
                                   setState(() => _termsAccepted = v!),
-                              title: Text.rich(
-                                TextSpan(
-                                  style: const TextStyle(fontSize: 14),
-                                  children: [
-                                    const TextSpan(
-                                      text:
-                                          "J'accepte les conditions d'utilisation ",
-                                    ),
-                                    WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: GestureDetector(
-                                        onTap: () =>
-                                            context.push('/terms-read'),
-                                        child: Text(
-                                          "lire les conditions d'utilisation",
-                                          style: TextStyle(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              title: const Text(
+                                "J'accepte les conditions d'utilisation",
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              subtitle: GestureDetector(
+                                onTap: () => context.push('/terms-read'),
+                                child: Text(
+                                  "Lire les conditions d'utilisation",
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             AppButton(
                               label: 'Se connecter',
                               isLoading: state.submitting,
                               onPressed: _termsAccepted ? _submit : null,
                             ),
-                            const SizedBox(height: 16),
-                            const Center(child: Text('ou connecte-toi avec')),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                const Expanded(child: Divider()),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    'ou',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                const Expanded(child: Divider()),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
                             SignInButton(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               Buttons.google,
                               text: 'Continuer avec Google',
-                              textStyle: Theme.of(context).textTheme.labelLarge
+                              textStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
                                   ?.copyWith(
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.primary,
                                   ),
-                              onPressed: _termsAccepted ? _googleSignIn : () {},
+                              onPressed:
+                                  _termsAccepted ? _googleSignIn : () {},
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 32),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text('Pas encore de compte ?'),
+                                Text(
+                                  'Pas encore de compte ?',
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
                                 TextButton(
                                   onPressed: () => context.go('/sign-up'),
-                                  child: const Text('Créer un compte'),
+                                  child: const Text("S'inscrire"),
                                 ),
                               ],
                             ),

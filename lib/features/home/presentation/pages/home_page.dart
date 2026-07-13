@@ -81,6 +81,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (value) => setState(() => _index = value),
+        indicatorColor: Theme.of(context).colorScheme.primaryContainer,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -140,20 +141,28 @@ class _TestsTab extends StatelessWidget {
 
         return CustomScrollView(
           slivers: [
-            const SliverPadding(
-              padding: EdgeInsets.all(16),
-              sliver: SliverToBoxAdapter(child: _PointsHeaderWidget()),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                child: Column(
+                  children: [
+                    const _PointsHeaderWidget(),
+                    const SizedBox(height: 16),
+                    const _EarnCard(),
+                  ],
+                ),
+              ),
             ),
-            const SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverToBoxAdapter(child: _EarnCard()),
-            ),
-            const SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverToBoxAdapter(
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                 child: Text(
                   'Applications à tester',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
             ),
@@ -164,7 +173,7 @@ class _TestsTab extends StatelessWidget {
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 sliver: SliverList.separated(
                   itemCount: state.tests.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
@@ -206,6 +215,7 @@ class _EarnCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Card(
+      margin: EdgeInsets.zero,
       color: colors.tertiaryContainer,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -214,10 +224,18 @@ class _EarnCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(
-                Icons.monetization_on_rounded,
-                color: colors.onTertiaryContainer,
-                size: 40,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: colors.onTertiaryContainer.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.monetization_on_rounded,
+                  color: colors.onTertiaryContainer,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -232,6 +250,7 @@ class _EarnCard extends StatelessWidget {
                         color: colors.onTertiaryContainer,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       'Regarde une vidéo et gagne 5 points',
                       style: TextStyle(

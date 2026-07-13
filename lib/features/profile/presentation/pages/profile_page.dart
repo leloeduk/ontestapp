@@ -92,11 +92,16 @@ class _ProfilePageState extends State<ProfilePage> {
             .fold<int>(0, (sum, r) => sum + r.rewardPoints) ??
         0;
 
+    if (_loading && _reviews == null) {
+      return const LoadingView();
+    }
+
     return RefreshIndicator(
       onRefresh: _loadReviews,
       child: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         children: [
+          const SizedBox(height: 8),
           Center(
             child: Stack(
               children: [
@@ -168,58 +173,70 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 24),
           Row(
             children: [
-              _InfoCard(
-                icon: Icons.emoji_events_rounded,
-                label: 'Points',
-                value: '${user.points}',
-                color: colors.primary,
+              Expanded(
+                child: _InfoCard(
+                  icon: Icons.emoji_events_rounded,
+                  label: 'Points',
+                  value: '${user.points}',
+                  color: colors.primary,
+                ),
               ),
               const SizedBox(width: 12),
-              _InfoCard(
-                icon: Icons.check_circle_rounded,
-                label: 'Tests réalisés',
-                value: '${user.testsDone}',
-                color: Colors.green,
+              Expanded(
+                child: _InfoCard(
+                  icon: Icons.check_circle_rounded,
+                  label: 'Tests réalisés',
+                  value: '${user.testsDone}',
+                  color: Colors.green,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Row(
             children: [
-              _InfoCard(
-                icon: Icons.verified_rounded,
-                label: 'Validés',
-                value: '$validatedCount',
-                color: Colors.green,
+              Expanded(
+                child: _InfoCard(
+                  icon: Icons.verified_rounded,
+                  label: 'Validés',
+                  value: '$validatedCount',
+                  color: Colors.green,
+                ),
               ),
               const SizedBox(width: 12),
-              _InfoCard(
-                icon: Icons.hourglass_empty_rounded,
-                label: 'En attente',
-                value: '$pendingCount',
-                color: Colors.orange,
+              Expanded(
+                child: _InfoCard(
+                  icon: Icons.hourglass_empty_rounded,
+                  label: 'En attente',
+                  value: '$pendingCount',
+                  color: Colors.orange,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Row(
             children: [
-              _InfoCard(
-                icon: Icons.payments_rounded,
-                label: 'Total gagné',
-                value: '+$validPoints pts',
-                color: Colors.amber.shade700,
+              Expanded(
+                child: _InfoCard(
+                  icon: Icons.payments_rounded,
+                  label: 'Total gagné',
+                  value: '+$validPoints pts',
+                  color: Colors.amber.shade700,
+                ),
               ),
               const SizedBox(width: 12),
-              _InfoCard(
-                icon: Icons.card_membership_rounded,
-                label: 'Plan',
-                value: user.plan == 'free' ? 'Gratuit' : user.plan,
-                color: Colors.blue,
+              Expanded(
+                child: _InfoCard(
+                  icon: Icons.card_membership_rounded,
+                  label: 'Plan',
+                  value: user.plan == 'free' ? 'Gratuit' : user.plan,
+                  color: Colors.blue,
+                ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
@@ -245,9 +262,6 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               icon: const Icon(Icons.add),
               label: const Text('Ajouter un test'),
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -257,9 +271,6 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () => context.push('/rewards'),
               icon: const Icon(Icons.history_rounded),
               label: const Text('Voir mon historique complet'),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -284,9 +295,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               icon: const Icon(Icons.star_rounded),
               label: const Text('Changer de plan'),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
             ),
           ),
           if (_loading)
@@ -295,7 +303,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 24),
             Text(
               'Dernières soumissions',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
             const SizedBox(height: 12),
             ...(_reviews!
@@ -310,8 +322,8 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: const Icon(Icons.logout),
               label: const Text('Se déconnecter'),
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
                 foregroundColor: colors.error,
+                side: BorderSide(color: colors.error.withValues(alpha: 0.5)),
               ),
             ),
           ),
@@ -399,28 +411,36 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(height: 6),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
-            ],
-          ),
+            ),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+          ],
         ),
       ),
     );
@@ -438,12 +458,22 @@ class _SubmissionTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
-        leading: Icon(
-          review.testValidated
-              ? Icons.check_circle_rounded
-              : Icons.hourglass_empty_rounded,
-          color: review.testValidated ? Colors.green : Colors.orange,
-          size: 28,
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: review.testValidated
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.orange.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            review.testValidated
+                ? Icons.check_circle_rounded
+                : Icons.hourglass_empty_rounded,
+            color: review.testValidated ? Colors.green : Colors.orange,
+            size: 22,
+          ),
         ),
         title: Text(
           review.testName ?? 'Test',
