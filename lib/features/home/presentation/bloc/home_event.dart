@@ -7,8 +7,16 @@ sealed class HomeEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class _HomeTestsUpdated extends HomeEvent {
-  const _HomeTestsUpdated(this.tests);
+class HomeTestsRequested extends HomeEvent {
+  const HomeTestsRequested();
+}
+
+class HomeTestsLoadMore extends HomeEvent {
+  const HomeTestsLoadMore();
+}
+
+class _HomeLoaded extends HomeEvent {
+  const _HomeLoaded(this.tests);
 
   final List<TestApp> tests;
 

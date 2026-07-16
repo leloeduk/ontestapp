@@ -129,7 +129,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   ) async {
     emit(state.copyWith(status: AdminStatus.loading));
     try {
-      final usersSnap = await _users.get();
+      final usersSnap = await _users.limit(1000).get();
       final totalUsers = usersSnap.docs.length;
       final totalPoints = usersSnap.docs.fold<int>(
         0,
@@ -138,6 +138,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
 
       final pendingSnap = await _reviews
           .where('testValidated', isEqualTo: false)
+          .limit(1000)
           .get();
       final pendingReviews = pendingSnap.docs.length;
 
@@ -165,6 +166,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     try {
       final snap = await _reviews
           .where('testValidated', isEqualTo: false)
+          .limit(500)
           .get();
       final reviews = snap.docs
           .map((doc) => ReviewModel.fromSnapshot(doc))
@@ -192,7 +194,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   ) async {
     emit(state.copyWith(status: AdminStatus.loading));
     try {
-      final snap = await _users.get();
+      final snap = await _users.limit(1000).get();
       final users = snap.docs.map((d) {
         final data = d.data();
         return <String, dynamic>{

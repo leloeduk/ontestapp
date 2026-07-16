@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/services/connectivity_cubit.dart';
 import '../../../../core/widgets/app_drawer.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
@@ -58,8 +59,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('OntestApp')),
+      appBar: AppBar(title: Text(tr.appTitle)),
       drawer: const AppDrawer(),
       body: Column(
         children: [
@@ -82,26 +84,26 @@ class _HomePageState extends State<HomePage> {
         selectedIndex: _index,
         onDestinationSelected: (value) => setState(() => _index = value),
         indicatorColor: Theme.of(context).colorScheme.primaryContainer,
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Accueil',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home_rounded),
+            label: tr.home,
           ),
           NavigationDestination(
-            icon: Icon(Icons.phone_android_outlined),
-            selectedIcon: Icon(Icons.phone_android_rounded),
-            label: 'Mes tests',
+            icon: const Icon(Icons.phone_android_outlined),
+            selectedIcon: const Icon(Icons.phone_android_rounded),
+            label: tr.myTests,
           ),
           NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history_rounded),
-            label: 'Historique',
+            icon: const Icon(Icons.history_outlined),
+            selectedIcon: const Icon(Icons.history_rounded),
+            label: tr.history,
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profil',
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person_rounded),
+            label: tr.profile,
           ),
         ],
       ),
@@ -125,73 +127,112 @@ class _ConnectivityBanner extends StatelessWidget {
   }
 }
 
-class _TestsTab extends StatelessWidget {
+class _TestsTab extends StatefulWidget {
   const _TestsTab();
 
   @override
+  State<_TestsTab> createState() => _TestsTabState();
+}
+
+class _TestsTabState extends State<_TestsTab> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<HomeBloc>().add(const HomeTestsRequested());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         if (state.status == HomeStatus.loading) {
           return const LoadingView();
         }
         if (state.status == HomeStatus.error) {
-          return const ErrorView(message: 'Impossible de charger les tests');
+          return ErrorView(
+            message: tr.cantLoadTests,
+            onRetry: () =>
+                context.read<HomeBloc>().add(const HomeTestsRequested()),
+          );
         }
 
-        return CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                child: Column(
-                  children: [
-                    const _PointsHeaderWidget(),
-                    const SizedBox(height: 16),
-                    const _EarnCard(),
-                  ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                child: Text(
-                  'Applications à tester',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<HomeBloc>().add(const HomeTestsRequested());
+          },
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                  child: Column(
+                    children: [
+                      const _PointsHeaderWidget(),
+                      const SizedBox(height: 16),
+                      const _EarnCard(),
+                    ],
                   ),
                 ),
               ),
-            ),
-            if (state.tests.isEmpty)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: EmptyView(message: 'Aucune application pour le moment'),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                sliver: SliverList.separated(
-                  itemCount: state.tests.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, i) {
-                    final test = state.tests[i];
-                    return TestCard(
-                      test: test,
-                      onTap: () =>
-                          context.push('/test/${test.id}', extra: test),
-                    );
-                  },
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: Text(
+                    tr.appsToTest,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
                 ),
               ),
-            const SliverPadding(
-              padding: EdgeInsets.only(bottom: 16),
-              sliver: SliverToBoxAdapter(child: SizedBox(height: 8)),
-            ),
-          ],
+              if (state.tests.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: EmptyView(message: tr.noApps),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  sliver: SliverList.separated(
+                    itemCount: state.tests.length + (state.hasMore ? 1 : 0),
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, i) {
+                      if (i == state.tests.length) {
+                        return state.status == HomeStatus.loadingMore
+                            ? const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            : Center(
+                                child: TextButton.icon(
+                                  onPressed: () => context
+                                      .read<HomeBloc>()
+                                      .add(const HomeTestsLoadMore()),
+                                  icon: const Icon(Icons.expand_more),
+                                  label: Text(tr.seeMore),
+                                ),
+                              );
+                      }
+                      final test = state.tests[i];
+                      return TestCard(
+                        test: test,
+                        onTap: () =>
+                            context.push('/test/${test.id}', extra: test),
+                      );
+                    },
+                  ),
+                ),
+              const SliverPadding(
+                padding: EdgeInsets.only(bottom: 16),
+                sliver: SliverToBoxAdapter(child: SizedBox(height: 8)),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -213,6 +254,7 @@ class _EarnCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     return Card(
       margin: EdgeInsets.zero,
@@ -243,7 +285,7 @@ class _EarnCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Gagne des points',
+                      tr.earnPointsCard,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -252,7 +294,7 @@ class _EarnCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Regarde une vidéo et gagne 5 points',
+                      tr.watchAndEarn,
                       style: TextStyle(
                         fontSize: 13,
                         color: colors.onTertiaryContainer.withValues(

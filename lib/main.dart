@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
+import 'core/localization/locale_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/services/ad_service.dart';
 import 'core/services/connectivity_cubit.dart';
@@ -61,8 +61,14 @@ class _MyAppState extends State<MyApp> {
     storageService: _storageService,
   );
 
+  // Localisation
+  late final LocaleCubit _localeCubit = LocaleCubit();
+
   // Blocs globaux (nécessaires au routeur)
-  late final AuthBloc _authBloc = AuthBloc(authRepository: _authRepository);
+  late final AuthBloc _authBloc = AuthBloc(
+    authRepository: _authRepository,
+    localeCubit: _localeCubit,
+  );
   late final OnboardingBloc _onboardingBloc =
       OnboardingBloc(service: _onboardingService);
   late final ConnectivityCubit _connectivityCubit = ConnectivityCubit();
@@ -74,6 +80,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    _localeCubit.close();
     _authBloc.close();
     _onboardingBloc.close();
     _connectivityCubit.close();
@@ -94,15 +101,21 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider.value(value: _localeCubit),
           BlocProvider.value(value: _authBloc),
           BlocProvider.value(value: _onboardingBloc),
           BlocProvider.value(value: _connectivityCubit),
         ],
-        child: MaterialApp.router(
-          title: 'OnTestApp',
-          theme: AppTheme.lightTheme,
-          routerConfig: _router,
-          debugShowCheckedModeBanner: false,
+        child: BlocBuilder<LocaleCubit, Locale>(
+          builder: (context, locale) {
+            return MaterialApp.router(
+              locale: locale,
+              title: 'OnTestApp',
+              theme: AppTheme.lightTheme,
+              routerConfig: _router,
+              debugShowCheckedModeBanner: false,
+            );
+          },
         ),
       ),
     );

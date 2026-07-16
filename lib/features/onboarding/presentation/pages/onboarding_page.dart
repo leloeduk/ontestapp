@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../bloc/onboarding_bloc.dart';
 
@@ -11,24 +12,6 @@ class _OnboardingContent {
   final String title;
   final String description;
 }
-
-const _pages = [
-  _OnboardingContent(
-    Icons.apps_rounded,
-    'Teste des applications',
-    'Découvre de nouvelles applications et essaie-les gratuitement.',
-  ),
-  _OnboardingContent(
-    Icons.star_rounded,
-    'Donne ton avis',
-    'Note les applications et partage ton expérience avec la communauté.',
-  ),
-  _OnboardingContent(
-    Icons.emoji_events_rounded,
-    'Gagne des points',
-    'Chaque test complété te rapporte des points. Amuse-toi !',
-  ),
-];
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -46,8 +29,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.dispose();
   }
 
+  List<_OnboardingContent> _pages(BuildContext context) {
+    final tr = AppLocalizations.of(context);
+    return [
+      _OnboardingContent(Icons.apps_rounded, tr.testApps, tr.testAppsDesc),
+      _OnboardingContent(Icons.star_rounded, tr.shareOpinion, tr.shareOpinionDesc),
+      _OnboardingContent(Icons.emoji_events_rounded, tr.earnPointsOnboard, tr.earnPointsDesc),
+    ];
+  }
+
   void _next(int currentPage) {
-    if (currentPage < _pages.length - 1) {
+    final pages = _pages(context);
+    if (currentPage < pages.length - 1) {
       _controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -59,11 +52,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
+    final pages = _pages(context);
     return Scaffold(
       body: SafeArea(
         child: BlocBuilder<OnboardingBloc, OnboardingState>(
           builder: (context, state) {
-            final isLast = state.currentPage == _pages.length - 1;
+            final isLast = state.currentPage == pages.length - 1;
             return Column(
               children: [
                 Align(
@@ -72,18 +67,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     onPressed: () => context
                         .read<OnboardingBloc>()
                         .add(const OnboardingCompleted()),
-                    child: const Text('Passer'),
+                    child: Text(tr.skip),
                   ),
                 ),
                 Expanded(
                   child: PageView.builder(
                     controller: _controller,
-                    itemCount: _pages.length,
+                    itemCount: pages.length,
                     onPageChanged: (index) => context
                         .read<OnboardingBloc>()
                         .add(OnboardingPageChanged(index)),
                     itemBuilder: (context, index) {
-                      final page = _pages[index];
+                      final page = pages[index];
                       return Padding(
                         padding: const EdgeInsets.all(32),
                         child: Column(
@@ -118,7 +113,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    _pages.length,
+                    pages.length,
                     (index) => AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -136,7 +131,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: AppButton(
-                    label: isLast ? 'Commencer' : 'Suivant',
+                    label: isLast ? tr.start : tr.next,
                     onPressed: () => _next(state.currentPage),
                   ),
                 ),

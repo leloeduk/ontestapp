@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/group_bloc.dart';
@@ -19,11 +20,12 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
   bool _playStoreConfirmed = false;
 
   Future<void> _openGroupLink() async {
+    final tr = AppLocalizations.of(context);
     final uri = Uri.parse('https://groups.google.com/g/ontestapp');
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossible d\'ouvrir le lien')),
+          SnackBar(content: Text(tr.couldNotOpenLink)),
         );
       }
     }
@@ -31,57 +33,69 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
+    final submitting = context.watch<GroupBloc>().state.status == GroupStatus.submitting;
     return Scaffold(
-      appBar: AppBar(title: const Text('Rejoindre le groupe')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(title: Text(tr.joinGroup)),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
                 children: [
-                  _StepDot(
-                    number: 1,
-                    label: 'Développeur',
-                    active: _step >= 0,
-                    done: _step > 0,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _StepDot(
+                        number: 1,
+                        label: tr.developer,
+                        active: _step >= 0,
+                        done: _step > 0,
+                      ),
+                      const SizedBox(width: 40, child: Divider(thickness: 2)),
+                      _StepDot(
+                        number: 2,
+                        label: tr.googleGroup,
+                        active: _step >= 1,
+                        done: _step > 1,
+                      ),
+                      if (_isDeveloper) ...[
+                        const SizedBox(width: 40, child: Divider(thickness: 2)),
+                        _StepDot(
+                          number: 3,
+                          label: tr.playConsole,
+                          active: _step >= 2,
+                          done: _step > 2,
+                        ),
+                      ],
+                    ],
                   ),
-                  const SizedBox(width: 40, child: Divider(thickness: 2)),
-                  _StepDot(
-                    number: 2,
-                    label: 'Google Group',
-                    active: _step >= 1,
-                    done: _step > 1,
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child: _step == 0
+                        ? _buildStep0(colors)
+                        : _step == 1
+                            ? _buildStep1(context, colors)
+                            : _buildStep2(context, colors),
                   ),
-                  if (_isDeveloper) ...[
-                    const SizedBox(width: 40, child: Divider(thickness: 2)),
-                    _StepDot(
-                      number: 3,
-                      label: 'Play Console',
-                      active: _step >= 2,
-                      done: _step > 2,
-                    ),
-                  ],
                 ],
               ),
-              const SizedBox(height: 24),
-              Expanded(
-                child: _step == 0
-                    ? _buildStep0(colors)
-                    : _step == 1
-                        ? _buildStep1(context, colors)
-                        : _buildStep2(context, colors),
-              ),
-            ],
+            ),
           ),
-        ),
+          if (submitting)
+            Container(
+              color: Colors.black26,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+        ],
       ),
     );
   }
 
   Widget _buildStep0(ColorScheme colors) {
+    final tr = AppLocalizations.of(context);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -97,14 +111,13 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Es-tu développeur ?',
+            tr.areYouDev,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            'Les développeurs doivent configurer\n'
-            'leur piste de test Google Play.',
+            tr.devDescription,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
           ),
@@ -120,7 +133,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                     });
                   },
                   icon: const Icon(Icons.close, size: 18),
-                  label: const Text('Non'),
+                  label: Text(tr.no),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),
@@ -136,7 +149,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                     });
                   },
                   icon: const Icon(Icons.check, size: 18),
-                  label: const Text('Oui'),
+                  label: Text(tr.yes),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),
@@ -150,6 +163,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
   }
 
   Widget _buildStep1(BuildContext context, ColorScheme colors) {
+    final tr = AppLocalizations.of(context);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -165,20 +179,19 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Rejoins le groupe des testeurs',
+            tr.joinTesterGroup,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            'Tu dois rejoindre le Google Group pour\n'
-            'pouvoir tester et faire tester tes applications.',
+            tr.joinDescription,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
           ),
           const SizedBox(height: 24),
           AppButton(
-            label: 'Rejoindre le groupe',
+            label: tr.joinGroupBtn,
             icon: Icons.open_in_new,
             onPressed: _openGroupLink,
           ),
@@ -189,7 +202,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             OutlinedButton.icon(
               onPressed: () => setState(() => _step = 2),
               icon: const Icon(Icons.arrow_forward, size: 18),
-              label: const Text('Suivant'),
+              label: Text(tr.nextBtn),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),
               ),
@@ -200,6 +213,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
   }
 
   Widget _buildStep2(BuildContext context, ColorScheme colors) {
+    final tr = AppLocalizations.of(context);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -215,14 +229,13 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Configure Google Play Console',
+            tr.configurePlayConsole,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            'Avant de valider, configure ta piste de test '
-            'dans Google Play Console :',
+            tr.configurePlayDesc,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
           ),
@@ -237,19 +250,17 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Étapes :',
+                  tr.steps,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: colors.onSecondaryContainer,
                   ),
                 ),
                 const SizedBox(height: 8),
-                _StepText('1. Va dans Google Play Console > Pistes de test'),
-                _StepText('2. Crée une piste Closed Testing'),
-                _StepText(
-                  '3. Ajoute ontestapp@googlegroups.com comme testeurs',
-                ),
-                _StepText('4. Publie la piste'),
+                _StepText(tr.step1),
+                _StepText(tr.step2),
+                _StepText(tr.step3),
+                _StepText(tr.step4),
               ],
             ),
           ),
@@ -257,10 +268,9 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           CheckboxListTile(
             value: _playStoreConfirmed,
             onChanged: (v) => setState(() => _playStoreConfirmed = v ?? false),
-            title: const Text(
-              'J\'ai configuré la piste de test\n'
-              'avec le groupe dans Play Console',
-              style: TextStyle(fontSize: 14),
+            title: Text(
+              tr.configConfirm,
+              style: const TextStyle(fontSize: 14),
             ),
             controlAffinity: ListTileControlAffinity.leading,
             contentPadding: EdgeInsets.zero,
@@ -271,7 +281,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           TextButton.icon(
             onPressed: () => setState(() => _step = 1),
             icon: const Icon(Icons.arrow_back, size: 18),
-            label: const Text('Retour'),
+            label: Text(tr.back),
           ),
         ],
       ),
@@ -279,13 +289,14 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
   }
 
   Widget _buildValidateButton() {
+    final tr = AppLocalizations.of(context);
     return BlocConsumer<GroupBloc, GroupState>(
       listener: (context, state) {
         if (state.status == GroupStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                state.errorMessage ?? 'Une erreur est survenue',
+                state.errorMessage ?? tr.errorOccurred,
               ),
             ),
           );
@@ -298,7 +309,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AppButton(
-              label: isSuccessful ? 'Terminé !' : 'Valider',
+              label: isSuccessful ? tr.done : tr.validate,
               isLoading: state.status == GroupStatus.submitting,
               onPressed:
                   (needsPlayStore || state.status == GroupStatus.submitting)
@@ -319,7 +330,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'Coche la case ci-dessus pour valider',
+                  tr.checkAbove,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey.shade500,
@@ -330,8 +341,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             if (isSuccessful) ...[
               const SizedBox(height: 16),
               Text(
-                'Bienvenue dans l\'équipe !\n'
-                'Tes apps pourront être testées par la communauté.',
+                tr.welcomeTeam,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.green.shade700,

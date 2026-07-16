@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/about/presentation/pages/about_page.dart';
+import '../localization/app_localizations.dart';
 import '../../features/auth/data/repositories/auth_repository.dart';
 import '../../features/auth/data/services/user_service.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
@@ -71,7 +72,7 @@ class AppRouter {
           return loc == '/splash' ? null : '/splash';
         }
 
-        final loggingIn = loc == '/sign-in' || loc == '/sign-up';
+        final loggingIn = loc == '/sign-in' || loc == '/sign-up' || loc == '/terms-read';
 
         if (authStatus == AuthStatus.unauthenticated) {
           return loggingIn ? null : '/sign-in';
@@ -282,12 +283,13 @@ class _MissingTest extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(),
       body: Center(
         child: TextButton(
           onPressed: () => GoRouter.of(context).go('/home'),
-          child: const Text('Retour à l\'accueil'),
+          child: Text(tr.backToHome),
         ),
       ),
     );

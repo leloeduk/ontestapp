@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../../test/domain/entities/test_app.dart';
 
@@ -12,6 +13,7 @@ class TestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context);
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
@@ -47,7 +49,7 @@ class TestCard extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: Text(
-                          test.category,
+                          tr.categoryDisplay(test.category),
                           style: TextStyle(
                             color: colors.primary,
                             fontSize: 12,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../core/localization/app_localizations.dart';
 import '../services/connectivity_cubit.dart';
 
 /// Bouton principal réutilisable, avec état de chargement optionnel.
@@ -23,6 +24,7 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
+        final tr = AppLocalizations.of(context);
         final isConnected = context.watch<ConnectivityCubit>().state;
         return FilledButton(
           onPressed: isLoading
@@ -32,8 +34,8 @@ class AppButton extends StatelessWidget {
                     ScaffoldMessenger.of(context)
                       ..hideCurrentSnackBar()
                       ..showSnackBar(
-                        const SnackBar(
-                          content: Text('Connectez-vous à internet'),
+                        SnackBar(
+                          content: Text(tr.connectToInternet),
                         ),
                       );
                     return;

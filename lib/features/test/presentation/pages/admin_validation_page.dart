@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
@@ -28,26 +29,28 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
+        final tr = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossible d\'ouvrir le lien')),
+          SnackBar(content: Text(tr.couldNotOpenLink)),
         );
       }
     }
   }
 
   void _validate(ReviewModel review) {
+    final tr = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Valider cette soumission ?'),
-        content: const Text('Les points seront crédités à l\'utilisateur.'),
+        title: Text(tr.validateSubmission),
+        content: Text(tr.pointsWillBeCredited),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annuler'),
+            child: Text(tr.cancel),
           ),
           AppButton(
-            label: 'Valider',
+            label: tr.validate,
             onPressed: () {
               Navigator.pop(ctx);
               context.read<AdminValidationBloc>().add(
@@ -91,22 +94,20 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
   }
 
   Future<void> _deleteTest(ReviewModel review) async {
+    final tr = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer ce test ?'),
-        content: const Text(
-          'Le test et ses images seront supprimés. '
-          'L\'utilisateur garde ses points déjà crédités.',
-        ),
+        title: Text(tr.deleteTestConfirm),
+        content: Text(tr.deleteTestMsg),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
+            child: Text(tr.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Supprimer'),
+            child: Text(tr.delete),
           ),
         ],
       ),
@@ -126,9 +127,10 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Validation admin')),
+      appBar: AppBar(title: Text(tr.adminValidationTitle)),
       body: BlocBuilder<AdminValidationBloc, AdminValidationState>(
         builder: (context, state) {
           if (state.status == AdminValidationStatus.loading ||
@@ -136,10 +138,10 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
             return const LoadingView();
           }
           if (state.status == AdminValidationStatus.error) {
-            return ErrorView(message: state.errorMessage ?? 'Erreur');
+            return ErrorView(message: state.errorMessage ?? tr.errorLabel);
           }
           if (state.reviews.isEmpty) {
-            return const Center(child: Text('Aucune soumission en attente'));
+            return Center(child: Text(tr.noPendingSubmissions));
           }
 
           return ListView.builder(
@@ -173,7 +175,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  review.userName ?? 'Utilisateur',
+                                  review.userName ?? tr.userLabel,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 15,
@@ -200,7 +202,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                 ),
                               ),
                               Text(
-                                'test${testsCount > 1 ? 's' : ''}',
+                                testsCount > 1 ? tr.testCountPlural : tr.testCount,
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: Colors.grey.shade600,
@@ -217,9 +219,9 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Capture 1',
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                Text(
+                                  tr.capture1,
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 4),
                                 GestureDetector(
@@ -237,8 +239,8 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                         : Container(
                                             height: 150,
                                             color: Colors.grey.shade200,
-                                            child: const Center(
-                                              child: Text('Aucune capture'),
+                                            child: Center(
+                                              child: Text(tr.noCapture),
                                             ),
                                           ),
                                   ),
@@ -251,9 +253,9 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Capture 2',
-                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                Text(
+                                  tr.capture2,
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 4),
                                 GestureDetector(
@@ -271,8 +273,8 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                         : Container(
                                             height: 150,
                                             color: Colors.grey.shade200,
-                                            child: const Center(
-                                              child: Text('Aucune capture'),
+                                            child: Center(
+                                              child: Text(tr.noCapture),
                                             ),
                                           ),
                                   ),
@@ -289,7 +291,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                           child: OutlinedButton.icon(
                             onPressed: () => _openPlayStore(review.playStoreUrl!),
                             icon: const Icon(Icons.open_in_new, size: 18),
-                            label: const Text('Voir sur le Play Store'),
+                            label: Text(tr.viewOnPlayStore),
                           ),
                         ),
                       const SizedBox(height: 12),
@@ -299,7 +301,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                             child: OutlinedButton.icon(
                               onPressed: () => _deleteTest(review),
                               icon: const Icon(Icons.delete_outline, size: 18),
-                              label: const Text('Supprimer'),
+                              label: Text(tr.delete),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: colors.error,
                               ),
@@ -308,7 +310,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: AppButton(
-                              label: 'Valider (+${review.rewardPoints} pts)',
+                              label: '${tr.validate} (+${review.rewardPoints} ${tr.points})',
                               isLoading:
                                   state.status ==
                                   AdminValidationStatus.validating,

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/services/connectivity_cubit.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/offline_banner.dart';
 import '../../../onboarding/data/services/onboarding_service.dart';
+import '../../../onboarding/presentation/pages/terms_read_page.dart';
 import '../bloc/auth_bloc.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -46,6 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(),
@@ -72,115 +75,147 @@ class _SignUpPageState extends State<SignUpPage> {
                     }
                   },
                   builder: (context, state) {
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(24),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Container(
-                              width: 72,
-                              height: 72,
-                              decoration: BoxDecoration(
-                                color: colors.primaryContainer,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.person_add_rounded,
-                                size: 36,
-                                color: colors.onPrimaryContainer,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              'Créer un compte',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Rejoins la communauté et gagne des points.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                            AppTextField(
-                              controller: _nameController,
-                              label: 'Nom',
-                              prefixIcon: Icons.person_outline,
-                              validator: (v) =>
-                                  Validators.notEmpty(v, field: 'Le nom'),
-                            ),
-                            const SizedBox(height: 16),
-                            AppTextField(
-                              controller: _emailController,
-                              label: 'Email',
-                              prefixIcon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                              validator: Validators.email,
-                            ),
-                            const SizedBox(height: 16),
-                            AppTextField(
-                              controller: _passwordController,
-                              label: 'Mot de passe',
-                              prefixIcon: Icons.lock_outline,
-                              obscureText: true,
-                              validator: Validators.password,
-                            ),
-                            const SizedBox(height: 4),
-                            CheckboxListTile(
-                              value: _termsAccepted,
-                              onChanged: (v) =>
-                                  setState(() => _termsAccepted = v!),
-                              title: const Text(
-                                "J'accepte les conditions d'utilisation",
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              subtitle: GestureDetector(
-                                onTap: () => context.push('/terms-read'),
-                                child: Text(
-                                  "Lire les conditions d'utilisation",
-                                  style: TextStyle(
-                                    color: colors.primary,
-                                    decoration: TextDecoration.underline,
-                                    fontSize: 13,
+                    return Stack(
+                      children: [
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(24),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Container(
+                                  width: 72,
+                                  height: 72,
+                                  decoration: BoxDecoration(
+                                    color: colors.primaryContainer,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.person_add_rounded,
+                                    size: 36,
+                                    color: colors.onPrimaryContainer,
                                   ),
                                 ),
-                              ),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            const SizedBox(height: 12),
-                            AppButton(
-                              label: "S'inscrire",
-                              isLoading: state.submitting,
-                              onPressed: _termsAccepted ? _submit : null,
-                            ),
-                            const SizedBox(height: 32),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
+                                const SizedBox(height: 24),
                                 Text(
-                                  'Déjà un compte ?',
-                                  style: TextStyle(color: Colors.grey.shade600),
+                                  tr.createAccount,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
-                                TextButton(
-                                  onPressed: () => context.go('/sign-in'),
-                                  child: const Text('Se connecter'),
+                                const SizedBox(height: 8),
+                                Text(
+                                  tr.signUpSubtitle,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+                                AppTextField(
+                                  controller: _nameController,
+                                  label: tr.name,
+                                  prefixIcon: Icons.person_outline,
+                                  validator: (v) => Validators.notEmpty(
+                                    v,
+                                    context: context,
+                                    field: tr.nameField,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                AppTextField(
+                                  controller: _emailController,
+                                  label: tr.email,
+                                  prefixIcon: Icons.email_outlined,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (v) => Validators.email(v, context),
+                                ),
+                                const SizedBox(height: 16),
+                                AppTextField(
+                                  controller: _passwordController,
+                                  label: tr.password,
+                                  prefixIcon: Icons.lock_outline,
+                                  obscureText: true,
+                                  validator: (v) => Validators.password(v, context),
+                                ),
+                                const SizedBox(height: 4),
+                                CheckboxListTile(
+                                  value: _termsAccepted,
+                                  onChanged: (v) =>
+                                      setState(() => _termsAccepted = v!),
+                                  title: Text(
+                                    tr.acceptTerms,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  controlAffinity:
+                                      ListTileControlAffinity.leading,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8, bottom: 12),
+                                  child: TextButton(
+                                    onPressed: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const TermsReadPage(),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      tr.readTermsShort,
+                                      style: TextStyle(
+                                        color: colors.primary,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                AppButton(
+                                  label: tr.signUp,
+                                  isLoading: state.submitting,
+                                  onPressed:
+                                      _termsAccepted ? _submit : null,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  tr.signUpTermsMsg,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      tr.alreadyAccount,
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => context.go('/sign-in'),
+                                      child: Text(tr.signIn),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                        if (state.submitting)
+                          Container(
+                            color: Colors.black26,
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                      ],
                     );
                   },
                 ),

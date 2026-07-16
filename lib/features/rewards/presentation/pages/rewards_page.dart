@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
 import '../bloc/rewards_bloc.dart';
 
@@ -25,10 +26,11 @@ class _RewardsPageState extends State<RewardsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mon historique')),
+      appBar: AppBar(title: Text(tr.myHistoryTitle)),
       body: BlocBuilder<RewardsBloc, RewardsState>(
         builder: (context, state) {
           if (state.status == RewardsStatus.idle ||
@@ -36,7 +38,7 @@ class _RewardsPageState extends State<RewardsPage> {
             return const LoadingView();
           }
           if (state.status == RewardsStatus.error) {
-            return ErrorView(message: state.errorMessage ?? 'Erreur');
+            return ErrorView(message: state.errorMessage ?? tr.unknownError);
           }
 
           final reviews = state.reviews;
@@ -50,7 +52,7 @@ class _RewardsPageState extends State<RewardsPage> {
                 child: Column(
                   children: [
                     Text(
-                      'Total gagné',
+                      tr.totalEarnedHeader,
                       style: TextStyle(color: colors.onPrimaryContainer),
                     ),
                     const SizedBox(height: 8),
@@ -67,8 +69,8 @@ class _RewardsPageState extends State<RewardsPage> {
                       final validated = reviews.where((r) => r.testValidated).length;
                       final pending = reviews.length - validated;
                       return Text(
-                        '$validated validé${validated > 1 ? 's' : ''}'
-                        '${pending > 0 ? ', $pending en attente' : ''}',
+                        '$validated ${validated == 1 ? tr.validated : tr.validatedLabel}'
+                        '${pending > 0 ? ', $pending ${tr.pending}' : ''}',
                         style: TextStyle(color: colors.onPrimaryContainer),
                       );
                     }),
@@ -76,8 +78,8 @@ class _RewardsPageState extends State<RewardsPage> {
                 ),
               ),
               if (reviews.isEmpty)
-                const Expanded(
-                  child: Center(child: Text('Aucun test pour le moment')),
+                Expanded(
+                  child: Center(child: Text(tr.noTestsYet)),
                 )
               else
                 Expanded(
@@ -123,8 +125,8 @@ class _RewardsPageState extends State<RewardsPage> {
                                         const SizedBox(width: 6),
                                         Text(
                                           review.testValidated
-                                              ? 'Validé'
-                                              : 'En attente',
+                                              ? tr.validated
+                                              : tr.pending,
                                           style: TextStyle(
                                             color: review.testValidated
                                                 ? Colors.green

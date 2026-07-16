@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/services/ad_service.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../auth/data/services/user_service.dart';
@@ -61,16 +62,18 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_adShown && mounted) {
+        final tr = AppLocalizations.of(context);
         _adShown = false;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('+2 points pour avoir regardé la vidéo !'),
+          SnackBar(
+            content: Text(tr.plus2Points),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -99,7 +102,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Soumission envoyée !',
+                tr.submissionSent,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -113,8 +116,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  'Tes captures d\'écran sont en cours de vérification.\n'
-                  'Les points seront crédités une fois validées.',
+                  tr.screenshotsBeingVerified,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey.shade700,
@@ -125,7 +127,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
               ),
               const SizedBox(height: 40),
               AppButton(
-                label: "Retour à l'accueil",
+                label: tr.backToHomeBtn,
                 onPressed: () => context.go('/home'),
               ),
             ],

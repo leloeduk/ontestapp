@@ -4,6 +4,8 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/locale_cubit.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../domain/entities/app_user.dart';
 
@@ -11,9 +13,12 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc({required AuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(const AuthState()) {
+  AuthBloc({
+    required AuthRepository authRepository,
+    required LocaleCubit localeCubit,
+  }) : _authRepository = authRepository,
+       _localeCubit = localeCubit,
+       super(const AuthState()) {
     on<_AuthUserChanged>(_onUserChanged);
     on<AuthSignInRequested>(_onSignIn);
     on<AuthSignUpRequested>(_onSignUp);
@@ -27,6 +32,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final AuthRepository _authRepository;
+  final LocaleCubit _localeCubit;
   late final StreamSubscription<AppUser?> _userSub;
 
   void _onUserChanged(_AuthUserChanged event, Emitter<AuthState> emit) {
@@ -56,7 +62,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on FirebaseAuthException catch (e) {
       emit(state.copyWith(submitting: false, errorMessage: _message(e)));
     } catch (_) {
-      emit(state.copyWith(submitting: false, errorMessage: 'Une erreur est survenue'));
+      final tr = AppLocalizations(_localeCubit.state);
+      emit(state.copyWith(submitting: false, errorMessage: tr.unknownError));
     }
   }
 
@@ -74,7 +81,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on FirebaseAuthException catch (e) {
       emit(state.copyWith(submitting: false, errorMessage: _message(e)));
     } catch (_) {
-      emit(state.copyWith(submitting: false, errorMessage: 'Une erreur est survenue'));
+      final tr = AppLocalizations(_localeCubit.state);
+      emit(state.copyWith(submitting: false, errorMessage: tr.unknownError));
     }
   }
 
@@ -89,7 +97,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on FirebaseAuthException catch (e) {
       emit(state.copyWith(submitting: false, errorMessage: _message(e)));
     } catch (_) {
-      emit(state.copyWith(submitting: false, errorMessage: 'Connexion Google impossible'));
+      final tr = AppLocalizations(_localeCubit.state);
+      emit(state.copyWith(submitting: false, errorMessage: tr.googleSignInFailed));
     }
   }
 
@@ -104,7 +113,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         photoUrl: event.photoUrl,
       );
     } catch (_) {
-      emit(state.copyWith(errorMessage: 'Impossible de modifier le profil'));
+      final tr = AppLocalizations(_localeCubit.state);
+      emit(state.copyWith(errorMessage: tr.unknownError));
     }
   }
 
@@ -116,21 +126,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   String _message(FirebaseAuthException e) {
+    final tr = AppLocalizations(_localeCubit.state);
     switch (e.code) {
       case 'invalid-email':
-        return 'Email invalide';
+        return tr.invalidEmail;
       case 'user-not-found':
       case 'wrong-password':
       case 'invalid-credential':
-        return 'Email ou mot de passe incorrect';
+        return tr.wrongCredentials;
       case 'email-already-in-use':
-        return 'Cet email est déjà utilisé';
+        return tr.emailInUse;
       case 'weak-password':
-        return 'Mot de passe trop faible';
+        return tr.weakPassword;
       case 'network-request-failed':
-        return 'Pas de connexion internet';
+        return tr.noInternet;
       default:
-        return e.message ?? 'Erreur d\'authentification';
+        return e.message ?? tr.authError;
     }
   }
 

@@ -12,17 +12,25 @@ class TestService {
   CollectionReference<Map<String, dynamic>> get _tests =>
       _firestore.collection(AppConstants.testsCollection);
 
-  Stream<List<TestModel>> watchTests() {
-    return _tests.orderBy('createdAt', descending: true).snapshots().map(
-          (query) =>
-              query.docs.map((doc) => TestModel.fromSnapshot(doc)).toList(),
-        );
+  Future<List<TestModel>> getTests({
+    int limit = 20,
+    DateTime? before,
+  }) async {
+    var query =
+        _tests.orderBy('createdAt', descending: true).limit(limit);
+    if (before != null) {
+      query = query.where('createdAt', isLessThan: before);
+    }
+    final snap = await query.get();
+    return snap.docs.map((doc) => TestModel.fromSnapshot(doc)).toList();
   }
 
-  Future<List<TestModel>> getTests() async {
-    final snapshot =
-        await _tests.orderBy('createdAt', descending: true).get();
-    return snapshot.docs.map((doc) => TestModel.fromSnapshot(doc)).toList();
+  Future<List<TestModel>> getUserTests(String uid) async {
+    final snap = await _tests
+        .where('userId', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
+        .get();
+    return snap.docs.map((doc) => TestModel.fromSnapshot(doc)).toList();
   }
 
   Future<TestModel?> getTest(String id) async {

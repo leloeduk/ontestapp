@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/services/ad_service.dart';
 import '../../../../core/services/connectivity_cubit.dart';
 import '../../../../core/widgets/app_button.dart';
@@ -71,20 +72,21 @@ class _TestDetailPageState extends State<TestDetailPage> {
   }
 
   Future<bool> _confirmDelete(BuildContext context) async {
+    final tr = AppLocalizations.of(context);
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer'),
-        content: const Text('Veux-tu vraiment supprimer cette application ?'),
+        title: Text(tr.deleteConfirmTitle),
+        content: Text(tr.deleteConfirmMsg),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
+            child: Text(tr.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Supprimer'),
+            child: Text(tr.delete),
           ),
         ],
       ),
@@ -93,12 +95,14 @@ class _TestDetailPageState extends State<TestDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final currentUid = context.read<AuthBloc>().state.user.uid;
     return BlocListener<EditTestBloc, EditTestState>(
       listener: (context, state) {
+        final tr = AppLocalizations.of(context);
         if (state.status == EditTestStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Application supprimée')),
+            SnackBar(content: Text(tr.appDeleted)),
           );
           context.pop();
         }
@@ -110,7 +114,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Détail'),
+          title: Text(tr.detail),
           actions: [
             BlocBuilder<TestDetailBloc, TestDetailState>(
               builder: (context, state) {
@@ -134,21 +138,21 @@ class _TestDetailPageState extends State<TestDetailPage> {
                     }
                   },
                   itemBuilder: (_) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'edit',
                       child: ListTile(
-                        leading: Icon(Icons.edit),
-                        title: Text('Modifier'),
+                        leading: const Icon(Icons.edit),
+                        title: Text(tr.edit),
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'delete',
                       child: ListTile(
-                        leading: Icon(Icons.delete, color: Colors.red),
+                        leading: const Icon(Icons.delete, color: Colors.red),
                         title: Text(
-                          'Supprimer',
-                          style: TextStyle(color: Colors.red),
+                          tr.delete,
+                          style: const TextStyle(color: Colors.red),
                         ),
                         contentPadding: EdgeInsets.zero,
                       ),
@@ -165,7 +169,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
               return const LoadingView();
             }
             if (state.status == TestDetailStatus.error || state.test == null) {
-              return ErrorView(message: state.errorMessage ?? 'Erreur');
+              return ErrorView(message: state.errorMessage ?? tr.errorLabel);
             }
 
             final test = state.test!;
@@ -211,7 +215,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
-                                      test.category,
+                                      tr.categoryDisplay(test.category),
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
@@ -239,7 +243,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          '+${test.points} points',
+                                          '+${test.points} ${tr.points}',
                                           style: TextStyle(
                                             color: colors.onPrimaryContainer,
                                             fontWeight: FontWeight.bold,
@@ -255,7 +259,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
                           ],
                         ),
                         const SizedBox(height: 28),
-                        _SectionHeader(title: 'Description'),
+                        _SectionHeader(title: tr.descriptionLabel),
                         const SizedBox(height: 8),
                         Text(
                           test.description,
@@ -267,37 +271,37 @@ class _TestDetailPageState extends State<TestDetailPage> {
                         ),
                         if (test.steps.isNotEmpty) ...[
                           const SizedBox(height: 28),
-                          _SectionHeader(title: 'Étapes à suivre'),
+                          _SectionHeader(title: tr.stepsToFollow),
                           const SizedBox(height: 12),
                           for (int i = 0; i < test.steps.length; i++)
                             StepItem(number: i + 1, text: test.steps[i]),
                         ],
                         const SizedBox(height: 28),
-                        _SectionHeader(title: 'Ce que vous devez faire'),
+                        _SectionHeader(title: tr.whatToDo),
                         const SizedBox(height: 12),
                         _ChecklistItem(
                           icon: Icons.play_circle_rounded,
-                          text: 'Suivre une vidéo pour gagner 5 points',
+                          text: tr.watchVideoForPoints,
                         ),
                         _ChecklistItem(
                           icon: Icons.download_rounded,
-                          text: "Télécharger et installer l'application",
+                          text: tr.downloadAndInstall,
                         ),
                         _ChecklistItem(
                           icon: Icons.rate_review_rounded,
-                          text: "Donner mon avis sur l'application",
+                          text: tr.giveReview,
                         ),
                         _ChecklistItem(
                           icon: Icons.screenshot_rounded,
-                          text: "Une capture d'écran de l'app installée",
+                          text: tr.screenshotInstalled,
                         ),
                         _ChecklistItem(
                           icon: Icons.screenshot_rounded,
-                          text: "Une capture d'écran de mon avis",
+                          text: tr.screenshotReview,
                         ),
                         _ChecklistItem(
                           icon: Icons.verified_rounded,
-                          text: 'Les deux captures validées = 10 points',
+                          text: tr.bothScreenshotsValidated,
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -317,7 +321,7 @@ class _TestDetailPageState extends State<TestDetailPage> {
                     ],
                   ),
                   child: AppButton(
-                    label: 'Tester maintenant',
+                    label: tr.testNow,
                     icon: Icons.play_arrow_rounded,
                     isLoading: _isAdLoading,
                     onPressed: _isAdLoading ? null : () => _startTest(test),
@@ -341,7 +345,7 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 17,
         fontWeight: FontWeight.w700,
         color: Colors.black87,

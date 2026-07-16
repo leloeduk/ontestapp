@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_localizations.dart';
+
 /// Champ de texte réutilisable avec label et validation.
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -44,29 +46,32 @@ class AppTextField extends StatelessWidget {
 class Validators {
   Validators._();
 
-  static String? email(String? value) {
+  static String? email(String? value, BuildContext context) {
+    final tr = AppLocalizations.of(context);
     if (value == null || value.trim().isEmpty) {
-      return 'Email requis';
+      return tr.emailRequired;
     }
     if (!value.contains('@') || !value.contains('.')) {
-      return 'Email invalide';
+      return tr.invalidEmail;
     }
     return null;
   }
 
-  static String? password(String? value) {
+  static String? password(String? value, BuildContext context) {
+    final tr = AppLocalizations.of(context);
     if (value == null || value.isEmpty) {
-      return 'Mot de passe requis';
+      return tr.passwordRequired;
     }
     if (value.length < 6) {
-      return 'Minimum 6 caractères';
+      return tr.minChars;
     }
     return null;
   }
 
-  static String? notEmpty(String? value, {String field = 'Ce champ'}) {
+  static String? notEmpty(String? value, {required BuildContext context, String field = 'Ce champ'}) {
+    final tr = AppLocalizations.of(context);
     if (value == null || value.trim().isEmpty) {
-      return '$field est requis';
+      return tr.fieldRequired(field);
     }
     return null;
   }

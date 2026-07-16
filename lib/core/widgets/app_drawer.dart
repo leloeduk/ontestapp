@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../localization/app_localizations.dart';
+import '../localization/locale_cubit.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -11,6 +13,7 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.watch<AuthBloc>().state.user;
     final colors = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context);
 
     return Drawer(
       child: SafeArea(
@@ -38,9 +41,7 @@ class AppDrawer extends StatelessWidget {
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white.withValues(alpha: 0.2),
                 child: Text(
-                  user.name.isNotEmpty
-                      ? user.name[0].toUpperCase()
-                      : '?',
+                  user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -51,23 +52,23 @@ class AppDrawer extends StatelessWidget {
             ),
             _DrawerTile(
               icon: Icons.home_rounded,
-              title: 'Accueil',
+              title: tr.home,
               onTap: () => _navigate(context, '/home'),
             ),
             _DrawerTile(
               icon: Icons.monetization_on_rounded,
-              title: 'Gagner des points',
+              title: tr.earnPoints,
               onTap: () => _navigate(context, '/earn'),
             ),
             _DrawerTile(
               icon: Icons.history_rounded,
-              title: 'Mon historique',
+              title: tr.myHistory,
               onTap: () => _navigate(context, '/rewards'),
             ),
             if (user.isAdmin)
               _DrawerTile(
                 icon: Icons.verified_rounded,
-                title: 'Validation admin',
+                title: tr.adminValidation,
                 onTap: () => _navigate(context, '/admin/validation'),
               ),
             const Padding(
@@ -76,12 +77,12 @@ class AppDrawer extends StatelessWidget {
             ),
             _DrawerTile(
               icon: Icons.info_outline_rounded,
-              title: 'À propos',
+              title: tr.about,
               onTap: () => _navigate(context, '/about'),
             ),
             _DrawerTile(
               icon: Icons.feedback_outlined,
-              title: 'Suggestion',
+              title: tr.feedback,
               onTap: () => _navigate(context, '/feedback'),
             ),
             const Spacer(),
@@ -89,9 +90,14 @@ class AppDrawer extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Divider(),
             ),
+            _LanguageTile(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(),
+            ),
             _DrawerTile(
               icon: Icons.logout,
-              title: 'Se déconnecter',
+              title: tr.signOut,
               iconColor: colors.error,
               textColor: colors.error,
               onTap: () {
@@ -131,11 +137,36 @@ class _DrawerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: iconColor),
-      title: Text(
-        title,
-        style: TextStyle(color: textColor),
-      ),
+      title: Text(title, style: TextStyle(color: textColor)),
       onTap: onTap,
+    );
+  }
+}
+
+class _LanguageTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
+    final locale = context.watch<LocaleCubit>().state;
+    final isFrench = locale.languageCode == 'fr';
+
+    return ListTile(
+      leading: const Icon(Icons.language),
+      trailing: SegmentedButton<String>(
+        segments: [
+          ButtonSegment(value: 'fr', label: Text(tr.french)),
+          ButtonSegment(value: 'en', label: Text(tr.english)),
+        ],
+        selected: {isFrench ? 'fr' : 'en'},
+        onSelectionChanged: (selected) {
+          final code = selected.first;
+          context.read<LocaleCubit>().setLocale(Locale(code));
+        },
+        style: ButtonStyle(
+          visualDensity: VisualDensity.compact,
+          textStyle: WidgetStateProperty.all(const TextStyle(fontSize: 12)),
+        ),
+      ),
     );
   }
 }

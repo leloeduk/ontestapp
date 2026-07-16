@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -46,8 +47,7 @@ class _MyTestsPageState extends State<MyTestsPage> {
     final testRepo = context.read<TestRepository>();
     final reviewRepo = context.read<ReviewRepository>();
     try {
-      final all = await testRepo.getTests();
-      final mine = all.where((t) => t.userId == uid).toList();
+      final mine = await testRepo.getUserTests(uid);
       final reviews = await reviewRepo.getReviewsByUser(uid);
       if (mounted) {
         setState(() {
@@ -62,19 +62,20 @@ class _MyTestsPageState extends State<MyTestsPage> {
   }
 
   Future<void> _deleteTest(TestApp test) async {
+    final tr = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer ce test ?'),
-        content: const Text('Cette action est irréversible.'),
+        title: Text(tr.deleteTest),
+        content: Text(tr.deleteIrreversible),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
+            child: Text(tr.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Supprimer'),
+            child: Text(tr.delete),
           ),
         ],
       ),
@@ -87,6 +88,7 @@ class _MyTestsPageState extends State<MyTestsPage> {
   }
 
   Widget _build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
 
     if (_loading && _tests == null) {
@@ -105,7 +107,7 @@ class _MyTestsPageState extends State<MyTestsPage> {
               Expanded(
                 child: _StatCard(
                   icon: Icons.phone_android_rounded,
-                  label: 'Tests soumis',
+                  label: tr.testsSubmitted,
                   value: '${tests.length}',
                   color: colors.primary,
                 ),
@@ -114,7 +116,7 @@ class _MyTestsPageState extends State<MyTestsPage> {
               Expanded(
                 child: _StatCard(
                   icon: Icons.rate_review_rounded,
-                  label: 'Avis donnés',
+                  label: tr.reviewsGiven,
                   value: '$_reviewsCount',
                   color: Colors.green,
                 ),
@@ -125,9 +127,9 @@ class _MyTestsPageState extends State<MyTestsPage> {
           _AddTestButton(userTestCount: tests.length),
           const SizedBox(height: 16),
           if (tests.isEmpty)
-            const Padding(
-              padding: EdgeInsets.only(top: 60),
-              child: EmptyView(message: 'Aucun test soumis'),
+            Padding(
+              padding: const EdgeInsets.only(top: 60),
+              child: EmptyView(message: tr.noTestsSubmitted),
             )
           else
             ...tests.map(
@@ -189,6 +191,7 @@ class _AddTestButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final user = context.watch<AuthBloc>().state.user;
 
     final canAdd = user.points >= 50 &&
@@ -200,14 +203,14 @@ class _AddTestButton extends StatelessWidget {
         onPressed: () {
           if (user.points < 50) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('50 points requis pour ajouter un test'),
+              SnackBar(
+                content: Text(tr.pointsRequired),
               ),
             );
           } else if (user.plan == 'free' && userTestCount >= 2) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Limite du plan gratuit atteinte (2 tests max)'),
+              SnackBar(
+                content: Text(tr.freePlanLimit),
               ),
             );
           } else {
@@ -215,7 +218,7 @@ class _AddTestButton extends StatelessWidget {
           }
         },
         icon: Icon(canAdd ? Icons.add : Icons.lock_outline),
-        label: const Text('Ajouter un test'),
+        label: Text(tr.addTest),
       ),
     );
   }

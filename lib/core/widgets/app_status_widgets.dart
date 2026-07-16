@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_localizations.dart';
+
 class LoadingView extends StatelessWidget {
   const LoadingView({super.key, this.message});
 
@@ -46,6 +48,7 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -79,7 +82,7 @@ class ErrorView extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Réessayer'),
+                label: Text(tr.retry),
               ),
             ],
           ],

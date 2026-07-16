@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/app_status_widgets.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../test/data/models/review_model.dart';
@@ -44,6 +45,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     if (_reviews != null && !_loading &&
         DateTime.now().difference(_lastLoad ?? DateTime(0)).inSeconds > 3) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _load());
@@ -52,7 +54,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
     final reviews = _reviews ?? [];
     if (reviews.isEmpty) {
-      return const EmptyView(message: 'Aucun historique');
+      return EmptyView(message: tr.noHistory);
     }
 
     final colors = Theme.of(context).colorScheme;
@@ -91,7 +93,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
-                review.testValidated ? 'Validé (+${review.rewardPoints} pts)' : 'En attente de validation',
+                review.testValidated ? '${tr.validated} (+${review.rewardPoints} pts)' : tr.pendingValidation,
                 style: TextStyle(
                   fontSize: 12,
                   color: review.testValidated ? Colors.green : Colors.orange,

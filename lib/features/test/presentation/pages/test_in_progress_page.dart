@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/test_app.dart';
 
 class TestInProgressPage extends StatefulWidget {
@@ -20,8 +21,9 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
     final uri = Uri.parse(widget.test.playStoreUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
+        final tr = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossible d\'ouvrir le Play Store')),
+          SnackBar(content: Text(tr.cantOpenPlayStore)),
         );
       }
     }
@@ -29,6 +31,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -57,7 +60,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Test en cours',
+                tr.testInProgress,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -66,14 +69,14 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
               const SizedBox(height: 32),
               _StepIndicator(
                 currentStep: _currentStep,
-                steps: const [
-                  'Ouvrir le Play Store',
-                  'Installer et tester',
-                  "Donner ton avis",
+                steps: [
+                  tr.openPlayStore,
+                  tr.installAndTest,
+                  tr.giveYourReview,
                 ],
               ),
               const SizedBox(height: 32),
-              _buildStepContent(colors),
+              _buildStepContent(colors, tr),
               const Spacer(flex: 2),
               Row(
                 children: [
@@ -81,7 +84,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => setState(() => _currentStep--),
-                        child: const Text('Précédent'),
+                        child: Text(tr.previous),
                       ),
                     ),
                   if (_currentStep > 0) const SizedBox(width: 12),
@@ -89,7 +92,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
                     Expanded(
                       child: FilledButton(
                         onPressed: () => setState(() => _currentStep++),
-                        child: const Text('Suivant'),
+                        child: Text(tr.nextStep),
                       ),
                     ),
                 ],
@@ -101,14 +104,13 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
     );
   }
 
-  Widget _buildStepContent(ColorScheme colors) {
+  Widget _buildStepContent(ColorScheme colors, AppLocalizations tr) {
     switch (_currentStep) {
       case 0:
         return Column(
           children: [
             Text(
-              "Ouvre l'application sur le Play Store pour accéder "
-              'à la page officielle et sécurisée.',
+              tr.openPlayStoreDesc,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
@@ -118,7 +120,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
               child: FilledButton.icon(
                 onPressed: _openStore,
                 icon: const Icon(Icons.open_in_new),
-                label: const Text('Ouvrir le Play Store'),
+                label: Text(tr.openPlayStore),
               ),
             ),
           ],
@@ -127,8 +129,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
         return Column(
           children: [
             Text(
-              "Installe l'application depuis le Play Store et utilise-la "
-              'quelques instants pour vérifier son bon fonctionnement.',
+              tr.installDesc,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
@@ -148,8 +149,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Teste toutes les fonctionnalités '
-                      'pour donner un avis complet.',
+                      tr.testAllFeatures,
                       style: TextStyle(
                         color: colors.onTertiaryContainer,
                         fontSize: 13,
@@ -165,8 +165,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
         return Column(
           children: [
             Text(
-              "Reviens ici et donne ton avis sur l'application. "
-              'Ton retour aide à améliorer l’application.',
+              tr.reviewReminder,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
@@ -179,7 +178,7 @@ class _TestInProgressPageState extends State<TestInProgressPage> {
                   extra: widget.test,
                 ),
                 icon: Icon(Icons.rate_review, color: colors.onPrimary),
-                label: const Text("J'ai testé — Donner mon avis"),
+                label: Text(tr.iTestedGiveReview),
               ),
             ),
           ],

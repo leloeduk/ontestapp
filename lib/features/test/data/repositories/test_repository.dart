@@ -8,9 +8,11 @@ class TestRepository {
 
   final TestService _testService;
 
-  Stream<List<TestApp>> watchTests() => _testService.watchTests();
+  Future<List<TestApp>> getTests({int limit = 20, DateTime? before}) =>
+      _testService.getTests(limit: limit, before: before);
 
-  Future<List<TestApp>> getTests() => _testService.getTests();
+  Future<List<TestApp>> getUserTests(String uid) =>
+      _testService.getUserTests(uid);
 
   Future<TestApp?> getTest(String id) => _testService.getTest(id);
 

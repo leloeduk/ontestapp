@@ -7,6 +7,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/services/ad_service.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -84,8 +85,9 @@ class _ReviewPageState extends State<ReviewPage> {
     final uri = Uri.parse(widget.test.playStoreUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
+        final tr = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossible d\'ouvrir le Play Store')),
+          SnackBar(content: Text(tr.cantOpenPlayStore)),
         );
       }
     }
@@ -93,10 +95,9 @@ class _ReviewPageState extends State<ReviewPage> {
 
   void _submit() {
     if (_screenshot1Path == null || _screenshot2Path == null) {
+      final tr = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Veuillez sélectionner les 2 captures d\'écran'),
-        ),
+        SnackBar(content: Text(tr.selectBothScreenshots)),
       );
       return;
     }
@@ -117,21 +118,25 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Donner mon avis')),
+      appBar: AppBar(title: Text(tr.giveReviewTitle)),
       body: BlocConsumer<ReviewBloc, ReviewState>(
         listener: (context, state) {
           if (state.status == ReviewStatus.success) {
             _showInterstitialThenGoHome();
           } else if (state.status == ReviewStatus.error) {
+            final tr = AppLocalizations.of(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage ?? 'Erreur')),
+              SnackBar(content: Text(state.errorMessage ?? tr.errorLabel)),
             );
           }
         },
         builder: (context, state) {
-          return SafeArea(
+          return Stack(
+            children: [
+              SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -152,7 +157,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Termine les étapes pour gagner tes points',
+                    tr.completeStepsForPoints,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -161,14 +166,14 @@ class _ReviewPageState extends State<ReviewPage> {
                   const SizedBox(height: 32),
                   _StepIndicator(
                     currentStep: _currentStep,
-                    steps: const [
-                      "Laisser un avis Google Play",
-                      "Capture d'écran 1 — Installation",
-                      "Capture d'écran 2 — Avis",
+                    steps: [
+                      tr.leavePlayStoreReview,
+                      tr.screenshot1Install,
+                      tr.screenshot2Review,
                     ],
                   ),
                   const SizedBox(height: 24),
-                  _buildStepContent(colors),
+                  _buildStepContent(colors, tr),
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -176,7 +181,7 @@ class _ReviewPageState extends State<ReviewPage> {
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () => setState(() => _currentStep--),
-                            child: const Text('Précédent'),
+                            child: Text(tr.previous),
                           ),
                         ),
                       if (_currentStep > 0) const SizedBox(width: 12),
@@ -184,7 +189,7 @@ class _ReviewPageState extends State<ReviewPage> {
                         Expanded(
                           child: FilledButton(
                             onPressed: () => setState(() => _currentStep++),
-                            child: const Text('Suivant'),
+                            child: Text(tr.nextStep),
                           ),
                         ),
                     ],
@@ -206,8 +211,7 @@ class _ReviewPageState extends State<ReviewPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Les points seront crédités après vérification '
-                            'manuelle de tes captures.',
+                            tr.reviewWillBeCredited,
                             style: TextStyle(
                               color: Colors.amber.shade800,
                               fontSize: 13,
@@ -219,28 +223,34 @@ class _ReviewPageState extends State<ReviewPage> {
                   ),
                   const SizedBox(height: 16),
                   AppButton(
-                    label: 'Envoyer pour validation',
+                    label: tr.sendForValidation,
                     isLoading: state.status == ReviewStatus.submitting,
                     onPressed: _submit,
                   ),
                 ],
               ),
             ),
-          );
+          ),
+          if (state.status == ReviewStatus.submitting)
+            Container(
+              color: Colors.black26,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+        ],
+      );
         },
       ),
     );
   }
 
-  Widget _buildStepContent(ColorScheme colors) {
+  Widget _buildStepContent(ColorScheme colors, AppLocalizations tr) {
     switch (_currentStep) {
       case 0:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Ouvre le Play Store, note l'application "
-              'et laisse un commentaire.',
+              tr.openPlayStoreToReview,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
@@ -250,7 +260,7 @@ class _ReviewPageState extends State<ReviewPage> {
               child: FilledButton.icon(
                 onPressed: _openPlayStoreReview,
                 icon: const Icon(Icons.open_in_new),
-                label: const Text('Ouvrir Google Play'),
+                label: Text(tr.openGooglePlay),
               ),
             ),
           ],
@@ -260,7 +270,7 @@ class _ReviewPageState extends State<ReviewPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Prends une capture d'écran de l'application installée.",
+              tr.takeScreenshotInstalled,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
@@ -283,7 +293,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 onPressed: _pickScreenshot1,
                 icon: const Icon(Icons.add_photo_alternate_outlined),
                 label: Text(
-                  _screenshot1Path != null ? 'Modifier' : 'Sélectionner',
+                  _screenshot1Path != null ? tr.modify : tr.select,
                 ),
               ),
             ),
@@ -294,7 +304,7 @@ class _ReviewPageState extends State<ReviewPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Capture ton avis (note + commentaire) sur Google Play.",
+              tr.captureScreenshotReview,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
             ),
@@ -317,7 +327,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 onPressed: _pickScreenshot2,
                 icon: const Icon(Icons.add_photo_alternate_outlined),
                 label: Text(
-                  _screenshot2Path != null ? 'Modifier' : 'Sélectionner',
+                  _screenshot2Path != null ? tr.modify : tr.select,
                 ),
               ),
             ),

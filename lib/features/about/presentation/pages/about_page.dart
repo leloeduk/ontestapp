@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/localization/app_localizations.dart';
+
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('À propos')),
+      appBar: AppBar(title: Text(tr.aboutTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -35,14 +38,12 @@ class AboutPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Pour les développeurs',
+                    Text(tr.forDevelopers,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    const Text(
-                      'OnTestApp permet aux développeurs de soumettre '
-                      'leurs applications Android pour qu\'elles soient '
-                      'testées par une communauté de testeurs qualifiés.',
-                      style: TextStyle(fontSize: 14, height: 1.5),
+                    Text(
+                      tr.aboutDesc,
+                      style: const TextStyle(fontSize: 14, height: 1.5),
                     ),
                   ],
                 ),
@@ -55,14 +56,13 @@ class AboutPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Comment ça marche ?',
+                    Text(tr.howItWorks,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    _BulletText('Les développeurs ajoutent leurs apps'),
-                    _BulletText('Les testeurs les installent et les testent'),
-                    _BulletText('Les testeurs donnent leur avis'),
-                    _BulletText(
-                        'Les développeurs reçoivent des retours concrets'),
+                    _BulletText(tr.howDevs),
+                    _BulletText(tr.howTesters),
+                    _BulletText(tr.howReview),
+                    _BulletText(tr.howFeedback),
                   ],
                 ),
               ),
@@ -74,7 +74,7 @@ class AboutPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Contact',
+                    Text(tr.contact,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
                     const Text(

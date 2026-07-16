@@ -30,6 +30,22 @@
           }
         },
         {
+          "client_id": "1008600573757-3bcohebi8io6d2iqr64m58l7gir0oe7o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.leloeduk.ontestapp",
+            "certificate_hash": "c427eafe3bc289b7d8f54a2c5c3e636412db0196"
+          }
+        },
+        {
+          "client_id": "1008600573757-tjo12m30051cv31oe9jac6vgoh1ako09.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.leloeduk.ontestapp",
+            "certificate_hash": "d3142375c6a41ce23494c642e6c5e5fe47f47671"
+          }
+        },
+        {
           "client_id": "1008600573757-0f7lsrr5i90aflnitpsrovhqjfbhmc7h.apps.googleusercontent.com",
           "client_type": 3
         }
