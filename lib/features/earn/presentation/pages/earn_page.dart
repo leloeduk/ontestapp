@@ -27,8 +27,7 @@ class _EarnPageState extends State<EarnPage> {
     super.dispose();
   }
 
-  Future<void> _loadAndShowAd() async {
-    final tr = AppLocalizations.of(context);
+  Future<void> _loadAndShowAd(AppLocalizations tr) async {
     setState(() => _isLoading = true);
 
     final ad = await AdService.loadRewardedAd();
@@ -223,7 +222,7 @@ class _EarnPageState extends State<EarnPage> {
                               label: tr.watchVideo,
                               icon: Icons.play_circle_fill_rounded,
                               isLoading: isLoading,
-                              onPressed: _isLoading ? null : _loadAndShowAd,
+                              onPressed: _isLoading ? null : () => _loadAndShowAd(tr),
                             ),
                             const SizedBox(height: 16),
                             Text(

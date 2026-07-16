@@ -11,6 +11,12 @@ class AppLocalizations {
   bool get _isEn => locale.languageCode == 'en';
 
   static AppLocalizations of(BuildContext context) {
+    final locale = context.watch<LocaleCubit>().state;
+    return AppLocalizations(locale);
+  }
+
+  /// À utiliser uniquement dans des callbacks (hors build).
+  static AppLocalizations read(BuildContext context) {
     final locale = context.read<LocaleCubit>().state;
     return AppLocalizations(locale);
   }

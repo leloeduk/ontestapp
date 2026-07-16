@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/locale_cubit.dart';
 import '../../../../core/services/connectivity_cubit.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -62,10 +63,48 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context);
+    final locale = context.watch<LocaleCubit>().state;
+    final isFrench = locale.languageCode == 'fr';
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  PopupMenuButton<String>(
+                    onSelected: (code) =>
+                        context.read<LocaleCubit>().setLocale(Locale(code)),
+                    icon: Icon(Icons.language, size: 18, color: Theme.of(context).colorScheme.primary),
+                    tooltip: tr.language,
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: 'fr',
+                        child: Row(
+                          children: [
+                            if (isFrench) Icon(Icons.check, size: 16, color: Theme.of(context).colorScheme.primary),
+                            if (isFrench) const SizedBox(width: 8),
+                            Text(isFrench ? tr.french : 'Français'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'en',
+                        child: Row(
+                          children: [
+                            if (!isFrench) Icon(Icons.check, size: 16, color: Theme.of(context).colorScheme.primary),
+                            if (!isFrench) const SizedBox(width: 8),
+                            Text(!isFrench ? tr.english : 'English'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             BlocBuilder<ConnectivityCubit, bool>(
               builder: (context, isConnected) {
                 if (!isConnected) return const OfflineBanner();
@@ -178,7 +217,6 @@ class _SignInPageState extends State<SignInPage> {
                                 ),
                                 AppButton(
                                   label: tr.signIn,
-                                  isLoading: state.submitting,
                                   onPressed: _submit,
                                 ),
                                 const SizedBox(height: 12),
@@ -249,10 +287,12 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                         if (state.submitting)
-                          Container(
-                            color: Colors.black26,
-                            child: const Center(
-                              child: CircularProgressIndicator(),
+                          AbsorbPointer(
+                            child: Container(
+                              color: Colors.black26,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                             ),
                           ),
                       ],
