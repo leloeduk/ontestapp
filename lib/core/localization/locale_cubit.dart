@@ -18,10 +18,10 @@ class LocaleCubit extends Cubit<Locale> {
   }
 
   Future<void> setLocale(Locale locale) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('locale', locale.languageCode);
     _loaded = true;
     emit(locale);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('locale', locale.languageCode);
   }
 
   void toggle() {
