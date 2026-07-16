@@ -32,7 +32,13 @@ class _SignInPageState extends State<SignInPage> {
     super.dispose();
   }
 
+  bool _termsError = false;
+
   void _submit() {
+    if (!_termsAccepted) {
+      setState(() => _termsError = true);
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       context.read<OnboardingService>().acceptTerms();
       context.read<AuthBloc>().add(
@@ -45,6 +51,10 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _googleSignIn() {
+    if (!_termsAccepted) {
+      setState(() => _termsError = true);
+      return;
+    }
     context.read<OnboardingService>().acceptTerms();
     context.read<AuthBloc>().add(const AuthGoogleSignInRequested());
   }
@@ -123,8 +133,10 @@ class _SignInPageState extends State<SignInPage> {
                                 const SizedBox(height: 4),
                                 CheckboxListTile(
                                   value: _termsAccepted,
-                                  onChanged: (v) =>
-                                      setState(() => _termsAccepted = v!),
+                                  onChanged: (v) => setState(() {
+                                    _termsAccepted = v!;
+                                    _termsError = false;
+                                  }),
                                   title: Text(
                                     tr.acceptTerms,
                                     style: const TextStyle(fontSize: 14),
@@ -133,6 +145,17 @@ class _SignInPageState extends State<SignInPage> {
                                       ListTileControlAffinity.leading,
                                   contentPadding: EdgeInsets.zero,
                                 ),
+                                if (_termsError)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8, bottom: 4),
+                                    child: Text(
+                                      tr.acceptTermsRequired,
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.error,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8, bottom: 12),
                                     child: TextButton(
@@ -156,8 +179,7 @@ class _SignInPageState extends State<SignInPage> {
                                 AppButton(
                                   label: tr.signIn,
                                   isLoading: state.submitting,
-                                  onPressed:
-                                      _termsAccepted ? _submit : null,
+                                  onPressed: _submit,
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
@@ -204,8 +226,7 @@ class _SignInPageState extends State<SignInPage> {
                                             .colorScheme
                                             .primary,
                                       ),
-                                  onPressed:
-                                      _termsAccepted ? _googleSignIn : () {},
+                                  onPressed: _googleSignIn,
                                 ),
                                 const SizedBox(height: 32),
                                 Row(

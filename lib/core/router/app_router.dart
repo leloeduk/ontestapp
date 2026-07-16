@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/about/presentation/pages/about_page.dart';
 import '../localization/app_localizations.dart';
+import '../localization/locale_cubit.dart';
 import '../../features/auth/data/repositories/auth_repository.dart';
 import '../../features/auth/data/services/user_service.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
@@ -54,21 +55,24 @@ class AppRouter {
   static GoRouter createRouter({
     required AuthBloc authBloc,
     required OnboardingBloc onboardingBloc,
+    required LocaleCubit localeCubit,
   }) {
     return GoRouter(
       initialLocation: '/splash',
       refreshListenable: _RouterRefresh([
         authBloc.stream,
         onboardingBloc.stream,
+        localeCubit.stream,
       ]),
       redirect: (context, state) {
         final authStatus = authBloc.state.status;
         final onboardingStatus = onboardingBloc.state.status;
         final loc = state.matchedLocation;
 
-        // En attente des informations initiales.
+        // En attente des informations initiales (auth, onboarding, locale).
         if (authStatus == AuthStatus.unknown ||
-            onboardingStatus == OnboardingStatus.unknown) {
+            onboardingStatus == OnboardingStatus.unknown ||
+            !localeCubit.loaded) {
           return loc == '/splash' ? null : '/splash';
         }
 

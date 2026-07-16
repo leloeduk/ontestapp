@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../localization/app_localizations.dart';
+
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
@@ -18,7 +21,7 @@ class OfflineBanner extends StatelessWidget {
             Icon(Icons.wifi_off_rounded, size: 16, color: colors.onError),
             const SizedBox(width: 8),
             Text(
-              'Hors ligne',
+              tr.offline,
               style: TextStyle(
                 color: colors.onError,
                 fontSize: 13,
@@ -27,7 +30,7 @@ class OfflineBanner extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              '— les données seront synchronisées',
+              tr.offlineDataSync,
               style: TextStyle(
                 color: colors.onError.withValues(alpha: 0.8),
                 fontSize: 13,

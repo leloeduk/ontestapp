@@ -63,6 +63,9 @@ class AppLocalizations {
 
   // --- Connectivity ---
   String get connectToInternet => _isEn ? 'Connect to the internet' : 'Connectez-vous à internet';
+  String get offline => _isEn ? 'Offline' : 'Hors ligne';
+  String get offlineDataSync => _isEn ? '— data will be synced' : '— les données seront synchronisées';
+  String get acceptTermsRequired => _isEn ? 'Please accept the terms of use' : 'Veuillez accepter les conditions d\'utilisation';
 
   // --- Drawer ---
   String get home => _isEn ? 'Home' : 'Accueil';

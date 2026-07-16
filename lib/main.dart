@@ -76,6 +76,7 @@ class _MyAppState extends State<MyApp> {
   late final GoRouter _router = AppRouter.createRouter(
     authBloc: _authBloc,
     onboardingBloc: _onboardingBloc,
+    localeCubit: _localeCubit,
   );
 
   @override
