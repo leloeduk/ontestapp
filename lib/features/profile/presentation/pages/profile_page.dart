@@ -157,9 +157,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => _showEditDialog(context, user),
-                  icon: Icon(Icons.edit, size: 35, color: colors.primary),
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () => _showEditDialog(context, user),
+                    icon: Icon(Icons.edit, size: 20, color: Colors.white),
+                  ),
                 ),
               ],
             ),
