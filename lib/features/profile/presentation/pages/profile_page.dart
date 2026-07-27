@@ -358,14 +358,14 @@ Future<void> _showEditDialog(BuildContext context, AppUser user) async {
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () async {
+                final userService = ctx.read<UserService>();
+                final uid = ctx.read<AuthBloc>().state.user.uid;
                 final picker = ImagePicker();
                 final picked = await picker.pickImage(
                   source: ImageSource.gallery,
                   imageQuality: 80,
                 );
                 if (picked != null) {
-                  final userService = ctx.read<UserService>();
-                  final uid = ctx.read<AuthBloc>().state.user.uid;
                   newPhotoUrl = await userService.uploadUserImage(
                     uid: uid,
                     filePath: picked.path,
