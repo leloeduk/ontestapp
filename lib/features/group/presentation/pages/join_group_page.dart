@@ -103,7 +103,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.asset(
-              'assets/images/joindgroup.png',
+              'assets/images/joindgroup.webp',
               width: double.infinity,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
@@ -171,7 +171,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.asset(
-              'assets/images/joindgroup.png',
+              'assets/images/joindgroup.webp',
               width: double.infinity,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
@@ -221,7 +221,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.asset(
-              'assets/images/addgroup.png',
+              'assets/images/addgroup.webp',
               width: double.infinity,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
