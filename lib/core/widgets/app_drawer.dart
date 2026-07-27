@@ -18,103 +18,101 @@ class AppDrawer extends StatelessWidget {
     final tr = AppLocalizations.of(context);
 
     return Drawer(
-      child: SafeArea(
-        child: Column(
-          children: [
-            UserAccountsDrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colors.primary, colors.tertiary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+      child: ListView(
+        children: [
+          UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [colors.primary, colors.tertiary],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              accountName: Text(
-                user.name,
-                style: const TextStyle(
-                  color: Colors.white,
+            ),
+            accountName: Text(
+              user.name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            accountEmail: Text(
+              user.email,
+              style: const TextStyle(color: Colors.white70),
+            ),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
+              child: Text(
+                user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                style: TextStyle(
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-              accountEmail: Text(
-                user.email,
-                style: const TextStyle(color: Colors.white70),
-              ),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white.withValues(alpha: 0.2),
-                child: Text(
-                  user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  color: Colors.white,
                 ),
               ),
             ),
+          ),
+          _DrawerTile(
+            icon: Icons.home_rounded,
+            title: tr.home,
+            onTap: () => _navigate(context, '/home'),
+          ),
+          _DrawerTile(
+            icon: Icons.monetization_on_rounded,
+            title: tr.earnPoints,
+            onTap: () => _navigate(context, '/earn'),
+          ),
+          _DrawerTile(
+            icon: Icons.history_rounded,
+            title: tr.myHistory,
+            onTap: () => _navigate(context, '/rewards'),
+          ),
+          if (user.isAdmin)
             _DrawerTile(
-              icon: Icons.home_rounded,
-              title: tr.home,
-              onTap: () => _navigate(context, '/home'),
+              icon: Icons.verified_rounded,
+              title: tr.adminValidation,
+              onTap: () => _navigate(context, '/admin/validation'),
             ),
-            _DrawerTile(
-              icon: Icons.monetization_on_rounded,
-              title: tr.earnPoints,
-              onTap: () => _navigate(context, '/earn'),
-            ),
-            _DrawerTile(
-              icon: Icons.history_rounded,
-              title: tr.myHistory,
-              onTap: () => _navigate(context, '/rewards'),
-            ),
-            if (user.isAdmin)
-              _DrawerTile(
-                icon: Icons.verified_rounded,
-                title: tr.adminValidation,
-                onTap: () => _navigate(context, '/admin/validation'),
-              ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(),
-            ),
-            _DrawerTile(
-              icon: Icons.info_outline_rounded,
-              title: tr.about,
-              onTap: () => _navigate(context, '/about'),
-            ),
-            _DrawerTile(
-              icon: Icons.feedback_outlined,
-              title: tr.feedback,
-              onTap: () => _navigate(context, '/feedback'),
-            ),
-            _DrawerTile(
-              icon: Icons.chat_rounded,
-              title: tr.joinWhatsApp,
-              onTap: () => _openWhatsApp(context),
-            ),
-            const Spacer(),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(),
-            ),
-            _LanguageTile(),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(),
-            ),
-            _DrawerTile(
-              icon: Icons.logout,
-              title: tr.signOut,
-              iconColor: colors.error,
-              textColor: colors.error,
-              onTap: () {
-                Navigator.pop(context);
-                context.read<AuthBloc>().add(const AuthSignOutRequested());
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(),
+          ),
+          _DrawerTile(
+            icon: Icons.info_outline_rounded,
+            title: tr.about,
+            onTap: () => _navigate(context, '/about'),
+          ),
+          _DrawerTile(
+            icon: Icons.feedback_outlined,
+            title: tr.feedback,
+            onTap: () => _navigate(context, '/feedback'),
+          ),
+          _DrawerTile(
+            icon: Icons.chat_rounded,
+            title: tr.joinWhatsApp,
+            onTap: () => _openWhatsApp(context),
+          ),
+          const Spacer(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(),
+          ),
+          _LanguageTile(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(),
+          ),
+          _DrawerTile(
+            icon: Icons.logout,
+            title: tr.signOut,
+            iconColor: colors.error,
+            textColor: colors.error,
+            onTap: () {
+              Navigator.pop(context);
+              context.read<AuthBloc>().add(const AuthSignOutRequested());
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
       ),
     );
   }

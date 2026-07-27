@@ -44,10 +44,19 @@ class ReviewService {
     return reviews;
   }
 
+  Future<List<ReviewModel>> getAllReviews() async {
+    final query = await _reviews.orderBy('createdAt', descending: true).get();
+    return query.docs.map((doc) => ReviewModel.fromSnapshot(doc)).toList();
+  }
+
   Future<void> validateReview(String reviewId, int rewardPoints) async {
     await _reviews.doc(reviewId).update({
       'testValidated': true,
       'rewardPoints': rewardPoints,
     });
+  }
+
+  Future<void> deleteReview(String reviewId) async {
+    await _reviews.doc(reviewId).delete();
   }
 }

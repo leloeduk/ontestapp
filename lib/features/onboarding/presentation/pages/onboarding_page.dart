@@ -39,8 +39,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _next(int currentPage) {
-    final pages = _pages(context);
-    if (currentPage < pages.length - 1) {
+    if (currentPage < 2) {
       _controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,

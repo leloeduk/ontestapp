@@ -28,6 +28,10 @@ class ReviewRepository {
     return _reviewService.getUnvalidatedReviews();
   }
 
+  Future<List<ReviewModel>> getAllReviews() {
+    return _reviewService.getAllReviews();
+  }
+
   Future<void> submitReview({
     required String userId,
     required String userName,
@@ -80,5 +84,15 @@ class ReviewRepository {
   }) async {
     await _reviewService.validateReview(reviewId, rewardPoints);
     await _userService.addRewards(userId, points: rewardPoints);
+  }
+
+  Future<void> deleteReview({
+    required String reviewId,
+    required String screenshot1Url,
+    required String screenshot2Url,
+  }) async {
+    await _storageService.deleteFile(screenshot1Url);
+    await _storageService.deleteFile(screenshot2Url);
+    await _reviewService.deleteReview(reviewId);
   }
 }
