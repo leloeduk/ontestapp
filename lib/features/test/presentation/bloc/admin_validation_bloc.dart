@@ -71,6 +71,15 @@ class AdminBatchDelete extends AdminValidationEvent {
   List<Object?> get props => [];
 }
 
+class AdminBatchDeleteSelected extends AdminValidationEvent {
+  const AdminBatchDeleteSelected(this.reviewId);
+
+  final String reviewId;
+
+  @override
+  List<Object?> get props => [reviewId];
+}
+
 enum AdminValidationStatus { idle, loading, loaded, validating, error, deleting }
 
 class AdminValidationState extends Equatable {
@@ -125,6 +134,7 @@ class AdminValidationBloc
     on<AdminDeselectAll>(_onDeselectAll);
     on<AdminBatchValidate>(_onBatchValidate);
     on<AdminBatchDelete>(_onBatchDelete);
+    on<AdminBatchDeleteSelected>(_onBatchDeleteSelected);
   }
 
   final ReviewRepository _reviewRepository;
@@ -243,6 +253,27 @@ class AdminValidationBloc
           );
         }
       }
+      add(const AdminValidationRequested());
+    } catch (_) {
+      emit(state.copyWith(
+        status: AdminValidationStatus.error,
+        errorMessage: 'Erreur lors de la suppression',
+      ));
+    }
+  }
+
+  Future<void> _onBatchDeleteSelected(
+    AdminBatchDeleteSelected event,
+    Emitter<AdminValidationState> emit,
+  ) async {
+    emit(state.copyWith(status: AdminValidationStatus.deleting));
+    try {
+      final review = state.reviews.firstWhere((r) => r.id == event.reviewId);
+      await _reviewRepository.deleteReview(
+        reviewId: review.id,
+        screenshot1Url: review.screenshot1Url,
+        screenshot2Url: review.screenshot2Url,
+      );
       add(const AdminValidationRequested());
     } catch (_) {
       emit(state.copyWith(

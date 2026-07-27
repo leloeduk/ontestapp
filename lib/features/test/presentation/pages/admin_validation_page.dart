@@ -27,7 +27,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        final tr = AppLocalizations.of(context);
+        final tr = AppLocalizations.read(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(tr.couldNotOpenLink)),
         );
@@ -36,7 +36,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
   }
 
   void _validate(ReviewModel review) {
-    final tr = AppLocalizations.of(context);
+    final tr = AppLocalizations.read(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -63,6 +63,32 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDelete(ReviewModel review) async {
+    final tr = AppLocalizations.read(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(tr.deleteTestConfirm),
+        content: Text(tr.deleteTestMsg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(tr.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(tr.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      context.read<AdminValidationBloc>().add(
+        AdminBatchDeleteSelected(review.id),
+      );
+    }
   }
 
   void _viewImage(String url) {
@@ -92,7 +118,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
   }
 
   Future<void> _confirmBatchValidate() async {
-    final tr = AppLocalizations.of(context);
+    final tr = AppLocalizations.read(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -116,7 +142,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
   }
 
   Future<void> _confirmBatchDelete() async {
-    final tr = AppLocalizations.of(context);
+    final tr = AppLocalizations.read(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -201,7 +227,8 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                   itemBuilder: (_, i) {
                     final review = state.reviews[i];
                     final isSelected = state.selectedIds.contains(review.id);
-                    final isDeleting = state.status == AdminValidationStatus.deleting;
+                    final isBusy = state.status == AdminValidationStatus.validating ||
+                        state.status == AdminValidationStatus.deleting;
                     return Card(
                       child: Padding(
                         padding: const EdgeInsets.all(10),
@@ -212,7 +239,7 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                               children: [
                                 Checkbox(
                                   value: isSelected,
-                                  onChanged: isDeleting
+                                  onChanged: isBusy
                                       ? null
                                       : (_) => context
                                           .read<AdminValidationBloc>()
@@ -379,13 +406,22 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                 children: [
                                   Expanded(
                                     child: OutlinedButton.icon(
-                                      onPressed: isDeleting
-                                          ? null
-                                          : () => _validate(review),
+                                      onPressed: isBusy ? null : () => _validate(review),
                                       icon: Icon(Icons.check_circle_outline,
                                           size: 18, color: colors.primary),
                                       label: Text(
                                           '${tr.validate} (+${review.rewardPoints} ${tr.points})'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: isBusy ? null : () => _confirmDelete(review),
+                                      icon: Icon(Icons.delete_outline, size: 18, color: colors.error),
+                                      label: Text(tr.delete),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: colors.error,
+                                      ),
                                     ),
                                   ),
                                 ],
