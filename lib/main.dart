@@ -108,6 +108,11 @@ class _MyAppState extends State<MyApp> {
       }
     });
 
+    if (_authBloc.state.status == AuthStatus.authenticated &&
+        _authBloc.state.user.uid.isNotEmpty) {
+      _pushService.saveToken(_authBloc.state.user.uid);
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
   }
 

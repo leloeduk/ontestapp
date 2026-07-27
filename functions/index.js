@@ -69,21 +69,40 @@ exports.onTestMilestone = onDocumentWritten(
     const token = userData?.fcmToken;
     const testsDone = userData?.testsDone ?? 0;
 
-    if (!token || testsDone === 0 || testsDone % 10 !== 0) return;
+    if (!token) return;
 
+    // Notification individuelle pour chaque validation
     try {
       await getMessaging().send({
         token,
         notification: {
-          title: 'Félicitations !',
-          body: `Tu as validé ${testsDone} tests. Continue comme ça !`,
+          title: 'Test validé',
+          body: `Un de tes tests a été validé. Continue comme ça !`,
         },
         data: {
-          title: 'Félicitations !',
-          body: `Tu as validé ${testsDone} tests. Continue comme ça !`,
-          type: 'milestone',
+          title: 'Test validé',
+          body: `Un de tes tests a été validé. Continue comme ça !`,
+          type: 'test_validated',
         },
       });
     } catch (_) {}
+
+    // Notification palier tous les 10 tests
+    if (testsDone > 0 && testsDone % 10 === 0) {
+      try {
+        await getMessaging().send({
+          token,
+          notification: {
+            title: 'Félicitations !',
+            body: `Tu as validé ${testsDone} tests. Continue comme ça !`,
+          },
+          data: {
+            title: 'Félicitations !',
+            body: `Tu as validé ${testsDone} tests. Continue comme ça !`,
+            type: 'milestone',
+          },
+        });
+      } catch (_) {}
+    }
   },
 );
