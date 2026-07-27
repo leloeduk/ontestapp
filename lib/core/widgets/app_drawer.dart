@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../constants/app_constants.dart';
 import '../localization/app_localizations.dart';
 import '../localization/locale_cubit.dart';
 
@@ -85,6 +87,11 @@ class AppDrawer extends StatelessWidget {
               title: tr.feedback,
               onTap: () => _navigate(context, '/feedback'),
             ),
+            _DrawerTile(
+              icon: Icons.chat_rounded,
+              title: tr.joinWhatsApp,
+              onTap: () => _openWhatsApp(context),
+            ),
             const Spacer(),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -115,6 +122,14 @@ class AppDrawer extends StatelessWidget {
   void _navigate(BuildContext context, String path) {
     Navigator.pop(context);
     context.push(path);
+  }
+
+  Future<void> _openWhatsApp(BuildContext context) async {
+    Navigator.pop(context);
+    final uri = Uri.parse(AppConstants.whatsappGroupUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }
 

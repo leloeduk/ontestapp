@@ -3,10 +3,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'core/constants/app_constants.dart';
+import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/services/ad_service.dart';
 import 'core/services/connectivity_cubit.dart';
+import 'core/services/update_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
 import 'features/auth/data/services/auth_service.dart';
@@ -46,6 +50,9 @@ class _MyAppState extends State<MyApp> {
   final _userService = UserService();
   final _storageService = StorageService();
   final _onboardingService = OnboardingService();
+  final _updateService = UpdateService();
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  bool _updateChecked = false;
 
   // Repositories
   late final AuthRepository _authRepository = AuthRepository(
@@ -74,10 +81,17 @@ class _MyAppState extends State<MyApp> {
   late final ConnectivityCubit _connectivityCubit = ConnectivityCubit();
 
   late final GoRouter _router = AppRouter.createRouter(
+    navigatorKey: _navigatorKey,
     authBloc: _authBloc,
     onboardingBloc: _onboardingBloc,
     localeCubit: _localeCubit,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
+  }
 
   @override
   void dispose() {
@@ -87,6 +101,47 @@ class _MyAppState extends State<MyApp> {
     _connectivityCubit.close();
     _router.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkForUpdate() async {
+    if (_updateChecked) return;
+    _updateChecked = true;
+
+    final available = await _updateService.isUpdateAvailable();
+    if (!available || !mounted) return;
+
+    final tr = AppLocalizations(_localeCubit.state);
+    if (!mounted) return;
+
+    final navCtx = _navigatorKey.currentContext;
+    if (navCtx == null || !navCtx.mounted) return;
+
+    showDialog<void>(
+      context: navCtx,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        icon: Icon(Icons.system_update_rounded,
+            size: 48, color: Theme.of(ctx).colorScheme.primary),
+        title: Text(tr.updateAvailable),
+        content: Text(tr.newVersionMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(tr.later),
+          ),
+          FilledButton.icon(
+            onPressed: () {
+              launchUrl(
+                Uri.parse(AppConstants.playStoreUrl),
+                mode: LaunchMode.externalApplication,
+              );
+            },
+            label: Text(tr.updateNow),
+            icon: const Icon(Icons.open_in_new),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

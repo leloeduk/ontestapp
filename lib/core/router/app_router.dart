@@ -53,11 +53,13 @@ class AppRouter {
   AppRouter._();
 
   static GoRouter createRouter({
+    required GlobalKey<NavigatorState> navigatorKey,
     required AuthBloc authBloc,
     required OnboardingBloc onboardingBloc,
     required LocaleCubit localeCubit,
   }) {
     return GoRouter(
+      navigatorKey: navigatorKey,
       initialLocation: '/splash',
       refreshListenable: _RouterRefresh([
         authBloc.stream,

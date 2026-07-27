@@ -29,5 +29,10 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
+
+    match /app_config/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
   }
 }

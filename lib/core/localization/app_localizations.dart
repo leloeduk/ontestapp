@@ -187,6 +187,18 @@ class AppLocalizations {
   String get howFeedback => _isEn ? 'Developers get concrete feedback' : 'Les développeurs reçoivent des retours concrets';
   String get contact => _isEn ? 'Contact' : 'Contact';
 
+  // --- Drawer ---
+  String get joinWhatsApp =>
+      _isEn ? 'Join WhatsApp group' : 'Rejoindre le groupe WhatsApp';
+
+  // --- Update ---
+  String get updateAvailable => _isEn ? 'Update available' : 'Mise à jour disponible';
+  String get newVersionMessage => _isEn
+      ? 'A new version is available on the Play Store. Update to get the latest features!'
+      : 'Une nouvelle version est disponible sur le Play Store. Mets à jour pour profiter des dernières fonctionnalités !';
+  String get updateNow => _isEn ? 'Update now' : 'Mettre à jour';
+  String get later => _isEn ? 'Later' : 'Plus tard';
+
   // --- Earn ---
   String get earnTitle => _isEn ? 'Earn points' : 'Gagner des points';
   String get earn5PerVideo => _isEn ? 'Earn 5 points per video' : 'Gagne 5 points par vidéo';
