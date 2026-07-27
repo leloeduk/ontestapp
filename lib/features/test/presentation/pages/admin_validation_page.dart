@@ -28,9 +28,9 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         final tr = AppLocalizations.read(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(tr.couldNotOpenLink)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(tr.couldNotOpenLink)));
       }
     }
   }
@@ -188,34 +188,46 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
             children: [
               if (state.selectedIds.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.primaryContainer.withAlpha(100),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         '${state.selectedIds.length} sélectionné(s)',
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 2),
                       TextButton.icon(
-                        onPressed: state.status == AdminValidationStatus.validating ||
+                        onPressed:
+                            state.status == AdminValidationStatus.validating ||
                                 state.status == AdminValidationStatus.deleting
                             ? null
                             : _confirmBatchValidate,
                         icon: const Icon(Icons.check_circle_outline, size: 18),
                         label: Text(tr.validate),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 2),
                       TextButton.icon(
-                        onPressed: state.status == AdminValidationStatus.validating ||
+                        onPressed:
+                            state.status == AdminValidationStatus.validating ||
                                 state.status == AdminValidationStatus.deleting
                             ? null
                             : _confirmBatchDelete,
-                        icon: Icon(Icons.delete_outline, size: 18, color: colors.error),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          size: 18,
+                          color: colors.error,
+                        ),
                         label: Text(tr.delete),
-                        style: TextButton.styleFrom(foregroundColor: colors.error),
+                        style: TextButton.styleFrom(
+                          foregroundColor: colors.error,
+                        ),
                       ),
                     ],
                   ),
@@ -227,7 +239,8 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                   itemBuilder: (_, i) {
                     final review = state.reviews[i];
                     final isSelected = state.selectedIds.contains(review.id);
-                    final isBusy = state.status == AdminValidationStatus.validating ||
+                    final isBusy =
+                        state.status == AdminValidationStatus.validating ||
                         state.status == AdminValidationStatus.deleting;
                     return Card(
                       child: Padding(
@@ -242,8 +255,8 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                   onChanged: isBusy
                                       ? null
                                       : (_) => context
-                                          .read<AdminValidationBloc>()
-                                          .add(AdminToggleReview(review.id)),
+                                            .read<AdminValidationBloc>()
+                                            .add(AdminToggleReview(review.id)),
                                 ),
                                 CircleAvatar(
                                   radius: 18,
@@ -259,7 +272,8 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         review.userName ?? tr.userLabel,
@@ -290,7 +304,9 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    _StatusBadge(validated: review.testValidated),
+                                    _StatusBadge(
+                                      validated: review.testValidated,
+                                    ),
                                     const SizedBox(height: 4),
                                     Text(
                                       '${state.userTestsCount[review.userId] ?? 0}',
@@ -315,20 +331,30 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         tr.capture1,
-                                        style: const TextStyle(fontWeight: FontWeight.w600),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                       const SizedBox(height: 4),
                                       GestureDetector(
-                                        onTap: () => _viewImage(review.screenshot1Url),
+                                        onTap: () =>
+                                            _viewImage(review.screenshot1Url),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: review.screenshot1Url.startsWith('http')
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          child:
+                                              review.screenshot1Url.startsWith(
+                                                'http',
+                                              )
                                               ? AppImage(
-                                                  imageUrl: review.screenshot1Url,
+                                                  imageUrl:
+                                                      review.screenshot1Url,
                                                   height: 150,
                                                   width: double.infinity,
                                                   fit: BoxFit.cover,
@@ -357,20 +383,30 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         tr.capture2,
-                                        style: const TextStyle(fontWeight: FontWeight.w600),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                       const SizedBox(height: 4),
                                       GestureDetector(
-                                        onTap: () => _viewImage(review.screenshot2Url),
+                                        onTap: () =>
+                                            _viewImage(review.screenshot2Url),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: review.screenshot2Url.startsWith('http')
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          child:
+                                              review.screenshot2Url.startsWith(
+                                                'http',
+                                              )
                                               ? AppImage(
-                                                  imageUrl: review.screenshot2Url,
+                                                  imageUrl:
+                                                      review.screenshot2Url,
                                                   height: 150,
                                                   width: double.infinity,
                                                   fit: BoxFit.cover,
@@ -395,38 +431,51 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
                               SizedBox(
                                 width: double.infinity,
                                 child: OutlinedButton.icon(
-                                  onPressed: () => _openPlayStore(review.playStoreUrl!),
+                                  onPressed: () =>
+                                      _openPlayStore(review.playStoreUrl!),
                                   icon: const Icon(Icons.open_in_new, size: 18),
                                   label: Text(tr.viewOnPlayStore),
                                 ),
                               ),
-                            if (!review.testValidated) ...[
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                if (!review.testValidated)
                                   Expanded(
                                     child: OutlinedButton.icon(
-                                      onPressed: isBusy ? null : () => _validate(review),
-                                      icon: Icon(Icons.check_circle_outline,
-                                          size: 18, color: colors.primary),
+                                      onPressed: isBusy
+                                          ? null
+                                          : () => _validate(review),
+                                      icon: Icon(
+                                        Icons.check_circle_outline,
+                                        size: 18,
+                                        color: colors.primary,
+                                      ),
                                       label: Text(
-                                          '${tr.validate} (+${review.rewardPoints} ${tr.points})'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: OutlinedButton.icon(
-                                      onPressed: isBusy ? null : () => _confirmDelete(review),
-                                      icon: Icon(Icons.delete_outline, size: 18, color: colors.error),
-                                      label: Text(tr.delete),
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: colors.error,
+                                        '${tr.validate} (+${review.rewardPoints} ${tr.points})',
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
+                                if (!review.testValidated)
+                                  const SizedBox(width: 8),
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: isBusy
+                                        ? null
+                                        : () => _confirmDelete(review),
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      size: 18,
+                                      color: colors.error,
+                                    ),
+                                    label: Text(tr.delete),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: colors.error,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -438,24 +487,34 @@ class _AdminValidationPageState extends State<AdminValidationPage> {
           );
         },
       ),
-      floatingActionButton: BlocBuilder<AdminValidationBloc, AdminValidationState>(
-        builder: (context, state) {
-          if (state.reviews.isEmpty || state.status == AdminValidationStatus.loading) {
-            return const SizedBox.shrink();
-          }
-          return FloatingActionButton.small(
-            onPressed: () {
-              if (state.allSelected) {
-                context.read<AdminValidationBloc>().add(const AdminDeselectAll());
-              } else {
-                context.read<AdminValidationBloc>().add(const AdminSelectAll());
+      floatingActionButton:
+          BlocBuilder<AdminValidationBloc, AdminValidationState>(
+            builder: (context, state) {
+              if (state.reviews.isEmpty ||
+                  state.status == AdminValidationStatus.loading) {
+                return const SizedBox.shrink();
               }
+              return FloatingActionButton.small(
+                onPressed: () {
+                  if (state.allSelected) {
+                    context.read<AdminValidationBloc>().add(
+                      const AdminDeselectAll(),
+                    );
+                  } else {
+                    context.read<AdminValidationBloc>().add(
+                      const AdminSelectAll(),
+                    );
+                  }
+                },
+                tooltip: state.allSelected
+                    ? 'Tout désélectionner'
+                    : 'Tout sélectionner',
+                child: Icon(
+                  state.allSelected ? Icons.deselect : Icons.select_all,
+                ),
+              );
             },
-            tooltip: state.allSelected ? 'Tout désélectionner' : 'Tout sélectionner',
-            child: Icon(state.allSelected ? Icons.deselect : Icons.select_all),
-          );
-        },
-      ),
+          ),
     );
   }
 }
