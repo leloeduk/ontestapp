@@ -1,12 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../auth/data/services/user_service.dart';
 import '../../data/models/test_model.dart';
 import '../../data/repositories/test_repository.dart';
+import '../../data/services/storage_service.dart';
 
 sealed class AddTestEvent extends Equatable {
   const AddTestEvent();
@@ -81,14 +79,17 @@ class AddTestBloc extends Bloc<AddTestEvent, AddTestState> {
   AddTestBloc({
     required TestRepository testRepository,
     required UserService userService,
+    required StorageService storageService,
   })  : _testRepository = testRepository,
         _userService = userService,
+        _storageService = storageService,
         super(const AddTestState()) {
     on<AddTestSubmitted>(_onSubmitted);
   }
 
   final TestRepository _testRepository;
   final UserService _userService;
+  final StorageService _storageService;
 
   Future<void> _onSubmitted(
     AddTestSubmitted event,
@@ -96,12 +97,16 @@ class AddTestBloc extends Bloc<AddTestEvent, AddTestState> {
   ) async {
     emit(state.copyWith(submitting: true, clearError: true));
     try {
-      final bytes = await File(event.imagePath).readAsBytes();
-      final base64Image = base64Encode(bytes);
-      final iconUrl = 'data:image/jpeg;base64,$base64Image';
+      final userId = event.userId;
+      final testId = _testRepository.generateId();
+
+      final iconUrl = await _storageService.uploadTestIcon(
+        testId: testId,
+        filePath: event.imagePath,
+      );
 
       final test = TestModel(
-        id: '',
+        id: testId,
         title: event.title,
         description: event.description,
         iconUrl: iconUrl,
@@ -109,10 +114,10 @@ class AddTestBloc extends Bloc<AddTestEvent, AddTestState> {
         points: 10,
         category: event.category,
         steps: const [],
-        userId: event.userId,
+        userId: userId,
       );
       await _testRepository.addTest(test);
-      await _userService.deductPoints(event.userId, points: 50);
+      await _userService.deductPoints(userId, points: 50);
       emit(const AddTestState(success: true));
     } catch (e) {
       final msg = e.toString().contains('permission-denied')

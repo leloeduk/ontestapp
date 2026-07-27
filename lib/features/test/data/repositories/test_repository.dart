@@ -16,6 +16,8 @@ class TestRepository {
 
   Future<TestApp?> getTest(String id) => _testService.getTest(id);
 
+  String generateId() => _testService.generateId();
+
   Future<void> addTest(TestModel test) => _testService.addTest(test);
 
   Future<void> updateTest(String id, Map<String, dynamic> data) =>

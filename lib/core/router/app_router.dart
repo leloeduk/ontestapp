@@ -31,6 +31,7 @@ import '../../features/test/domain/entities/test_app.dart';
 import '../../features/test/presentation/bloc/admin_validation_bloc.dart';
 import '../../features/test/presentation/bloc/review_bloc.dart';
 import '../../features/test/presentation/bloc/test_detail_bloc.dart';
+import '../../features/test/data/services/storage_service.dart';
 import '../../features/test/presentation/bloc/add_test_bloc.dart';
 import '../../features/test/presentation/bloc/edit_test_bloc.dart';
 import '../../features/test/presentation/pages/add_test_page.dart';
@@ -40,13 +41,6 @@ import '../../features/test/presentation/pages/confirmation_page.dart';
 import '../../features/test/presentation/pages/review_page.dart';
 import '../../features/test/presentation/pages/test_detail_page.dart';
 import '../../features/test/presentation/pages/test_in_progress_page.dart';
-
-// Admin web
-import '../../admin/bloc/admin_bloc.dart';
-import '../../admin/pages/admin_shell_page.dart';
-import '../../admin/pages/admin_dashboard_page.dart';
-import '../../admin/pages/admin_reviews_page.dart';
-import '../../admin/pages/admin_users_page.dart';
 
 /// Configuration de la navigation (GoRouter).
 class AppRouter {
@@ -213,6 +207,7 @@ class AppRouter {
             create: (ctx) => AddTestBloc(
               testRepository: ctx.read<TestRepository>(),
               userService: ctx.read<UserService>(),
+              storageService: ctx.read<StorageService>(),
             ),
             child: const AddTestPage(),
           ),
@@ -231,33 +226,6 @@ class AppRouter {
             create: (ctx) => FeedbackBloc(feedbackService: FeedbackService()),
             child: const FeedbackPage(),
           ),
-        ),
-        // --- Admin Web ---
-        ShellRoute(
-          builder: (context, state, child) => AdminShellPage(child: child),
-          routes: [
-            GoRoute(
-              path: '/admin',
-              builder: (context, __) => BlocProvider(
-                create: (ctx) => AdminBloc(),
-                child: const AdminDashboardPage(),
-              ),
-            ),
-            GoRoute(
-              path: '/admin/reviews',
-              builder: (context, __) => BlocProvider(
-                create: (ctx) => AdminBloc(),
-                child: const AdminReviewsPage(),
-              ),
-            ),
-            GoRoute(
-              path: '/admin/users',
-              builder: (context, __) => BlocProvider(
-                create: (ctx) => AdminBloc(),
-                child: const AdminUsersPage(),
-              ),
-            ),
-          ],
         ),
       ],
     );

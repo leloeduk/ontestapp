@@ -24,6 +24,15 @@ class StorageService {
     return await ref.getDownloadURL();
   }
 
+  Future<String> uploadTestIcon({
+    required String testId,
+    required String filePath,
+  }) async {
+    final ref = _storage.ref('test_icons/$testId.jpg');
+    await ref.putFile(File(filePath));
+    return await ref.getDownloadURL();
+  }
+
   Future<void> deleteFile(String url) async {
     try {
       await _storage.refFromURL(url).delete();

@@ -39,8 +39,10 @@ class TestService {
     return TestModel.fromSnapshot(doc);
   }
 
+  String generateId() => _tests.doc().id;
+
   Future<void> addTest(TestModel test) async {
-    final doc = _tests.doc();
+    final doc = _tests.doc(test.id);
     final model = TestModel(
       id: doc.id,
       title: test.title,
