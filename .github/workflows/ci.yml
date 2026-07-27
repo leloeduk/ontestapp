@@ -22,4 +22,5 @@ jobs:
 
       - run: flutter analyze
 
-      - run: flutter test
+      - name: Run tests
+        run: flutter test --reporter expanded 2>&1
