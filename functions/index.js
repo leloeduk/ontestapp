@@ -31,6 +31,7 @@ exports.onVersionUpdate = onDocumentUpdated(
         title: 'Mise à jour disponible',
         body: `Version ${newVersion} disponible sur le Play Store.`,
       },
+      android: { notification: { icon: 'ic_launcher', color: '#6750A4' } },
       data: {
         title: 'Mise à jour disponible',
         body: `Version ${newVersion} disponible sur le Play Store.`,
@@ -79,6 +80,7 @@ exports.onTestMilestone = onDocumentWritten(
           title: 'Test validé',
           body: `Un de tes tests a été validé. Continue comme ça !`,
         },
+        android: { notification: { icon: 'ic_launcher', color: '#6750A4' } },
         data: {
           title: 'Test validé',
           body: `Un de tes tests a été validé. Continue comme ça !`,
@@ -96,6 +98,7 @@ exports.onTestMilestone = onDocumentWritten(
             title: 'Félicitations !',
             body: `Tu as validé ${testsDone} tests. Continue comme ça !`,
           },
+          android: { notification: { icon: 'ic_launcher', color: '#6750A4' } },
           data: {
             title: 'Félicitations !',
             body: `Tu as validé ${testsDone} tests. Continue comme ça !`,
