@@ -14,7 +14,7 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
       - uses: subosito/flutter-action@v2
@@ -24,8 +24,12 @@ jobs:
 
       - run: flutter pub get
 
+      - run: flutter doctor -v
+
       # Debug APK (toujours)
       - run: flutter build apk --debug --target-platform android-arm64
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
       - uses: actions/upload-artifact@v4
         with:
           name: apk-debug
