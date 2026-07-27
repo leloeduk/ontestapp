@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import 'core/localization/locale_cubit.dart';
 import 'core/router/app_router.dart';
 import 'core/services/ad_service.dart';
 import 'core/services/connectivity_cubit.dart';
+import 'core/services/push_notification_service.dart';
 import 'core/services/update_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
@@ -35,11 +37,17 @@ Future<void> main() async {
   );
 
   await AdService.initialize();
-  runApp(const MyApp());
+
+  final pushService = PushNotificationService();
+  await pushService.init();
+
+  runApp(MyApp(pushService: pushService));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.pushService});
+
+  final PushNotificationService pushService;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -51,6 +59,7 @@ class _MyAppState extends State<MyApp> {
   final _storageService = StorageService();
   final _onboardingService = OnboardingService();
   final _updateService = UpdateService();
+  late final _pushService = widget.pushService;
   final _navigatorKey = GlobalKey<NavigatorState>();
   bool _updateChecked = false;
 
@@ -90,7 +99,31 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
+    _pushService.onForegroundMessage = _onForegroundPush;
+
+    _authBloc.stream.listen((state) {
+      if (state.status == AuthStatus.authenticated && state.user.uid.isNotEmpty) {
+        _pushService.saveToken(state.user.uid);
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
+  }
+
+  void _onForegroundPush(RemoteMessage message) {
+    final body = message.data['body'] ?? '';
+    if (body.isEmpty) return;
+
+    final navCtx = _navigatorKey.currentContext;
+    if (navCtx == null || !navCtx.mounted) return;
+
+    ScaffoldMessenger.of(navCtx).showSnackBar(
+      SnackBar(
+        content: Text(body),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
